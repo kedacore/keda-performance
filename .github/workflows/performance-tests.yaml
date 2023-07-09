@@ -10,6 +10,7 @@ jobs:
   execute:
     name: Execute performance tests
     runs-on: ubuntu-latest
+    concurrency: performance-tests
     steps:
       - uses: actions/checkout@v3
 
