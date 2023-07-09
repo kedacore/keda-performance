@@ -1,0 +1,33 @@
+extraScrapeConfigs: |
+  - job_name: 'keda-operator'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 15s
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - keda-operator.keda:8080
+  - job_name: 'keda-metrics-server'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 15s
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - keda-metrics-apiserver.keda:8080
+  - job_name: 'keda-admission-webhooks'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 15s
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - keda-admission-webhooks.keda:8080
+
+alertmanager:
+  enabled: false
+prometheus-pushgateway:
+  enabled: false

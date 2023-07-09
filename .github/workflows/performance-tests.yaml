@@ -1,0 +1,32 @@
+name: Execute performance tests
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+jobs:
+  execute:
+    name: Execute performance tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Get cluster context
+        run: make get-cluster-context
+
+      - name: Deploy dependencies
+        run: make deploy
+
+      # Dummy action, replace with test execution
+      - name: Wait 
+        uses: GuillaumeFalourd/wait-sleep-action@v1
+        with:
+          time: '60' # for 60 seconds
+
+      - name: Cleanup dependencies
+        run: make undeploy
