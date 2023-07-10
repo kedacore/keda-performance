@@ -55,8 +55,8 @@ Kedacore Perf was inspired by the need for a comprehensive performance testing t
 
 ## Contact
 
-For any questions or inquiries, please contact the project maintainer:  
-Maintainer: [Almudena Vivanco](mailto:almudena.vivanco@gmail.com)
+For any questions or inquiries, please contact the project contributor:  
+[Almudena Vivanco](mailto:almudena.vivanco@gmail.com)
 
 You can also open an issue on GitHub for any technical concerns or bug reports.
 
