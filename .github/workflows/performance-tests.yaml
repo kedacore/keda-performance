@@ -14,9 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.20"
+
       - uses: oNaiPs/secrets-to-env-action@v1
         with:
           secrets: ${{ toJSON(secrets) }}
+
+      - name: Build k6 runner
+        run: make generate-k6
 
       - name: Get cluster context
         run: make get-cluster-context
@@ -24,11 +31,11 @@ jobs:
       - name: Deploy dependencies
         run: make deploy
 
-      # Dummy action, replace with test execution
-      - name: Wait 
-        uses: GuillaumeFalourd/wait-sleep-action@v1
-        with:
-          time: '60' # for 60 seconds
+      - name: Login in Grafana Cloud
+        run: make login-k6
+
+      - name: Execute performance tests
+        run: make excute-k6
 
       - name: Cleanup dependencies
         run: make undeploy

@@ -9,19 +9,26 @@ TF_AZURE_RESOURCE_GROUP ?= resource_group
 TF_GRAFANA_PROMETHEUS_URL ?= url
 TF_GRAFANA_PROMETHEUS_USER ?= user
 TF_GRAFANA_PROMETHEUS_PASSWORD ?= password
+TF_GRAFANA_TOKEN ?= token
 
 KEDA_VERSION ?= main
 
-.PHONY:
+##################################################
+# Kubernetes context                             #
+##################################################
+
 az-login:
 	@az login --service-principal -u $(TF_AZURE_SP_APP_ID) -p "$(AZURE_SP_KEY)" --tenant $(TF_AZURE_SP_TENANT)
 
-.PHONY: get-cluster-context
 get-cluster-context: az-login ## Get Azure cluster context.
 	@az aks get-credentials \
 		--name $(TEST_CLUSTER_NAME) \
 		--subscription $(TF_AZURE_SUBSCRIPTION) \
 		--resource-group $(TF_AZURE_RESOURCE_GROUP)
+
+##################################################
+# Deployments                                    #
+##################################################
 
 deploy: deploy-keda deploy-prometheus
 
@@ -53,3 +60,21 @@ deploy-prometheus:
 undeploy-prometheus:
 	helm uninstall prometheus -n performance-prometheus
 	kubectl delete ns performance-prometheus
+
+##################################################
+# Grafana k6                                     #
+##################################################
+
+generate-k6:
+	go install go.k6.io/xk6/cmd/xk6@latest
+	xk6 build \
+    	--output /usr/local/bin/k6 \
+		--with github.com/szkiba/xk6-yaml@latest \
+		--with github.com/grafana/xk6-kubernetes \
+		--with github.com/grafana/xk6-disruptor
+
+login-k6:
+	@k6 login cloud --token $(TF_GRAFANA_TOKEN)
+
+excute-k6:
+	k6 run --out cloud test.js
