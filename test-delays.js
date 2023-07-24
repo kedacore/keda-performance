@@ -7,6 +7,7 @@ import deletenamespace from "./shared/delete-namespace.js"
 import { group, sleep } from "k6";
 import exec from 'k6/execution';
 import { PodDisruptor } from 'k6/x/disruptor';
+import { ServiceDisruptor } from 'k6/x/disruptor';
 
 const workloaddeployment = open("./workload/workload-deployment.yaml")
 const workloadnamespace = open("./workload/workload-namespace.yaml")
@@ -40,7 +41,7 @@ export const options = {
         iterations: 1,
         vus: 1,
         exec: "disrupt",
-        startTime: "15s",
+        startTime: "10s",
     },
     teardown:{
       executor: 'shared-iterations',
@@ -75,33 +76,27 @@ export function setup() {
 export default function () {
   // Access the K6 execution context and retrieve the iteration number
   const iteration = exec.scenario.iterationInTest;
-
   updatedeployment(workloaddeployment,iteration);
   sleep(5);
   updatesscaleobject(yamlscaleobject,iteration);
 
 }
 
-export function disrupt() {
-  // Access the K6 execution context and retrieve the iteration number
-  const iteration = exec.scenario.iterationInTest;
+export function disrupt(data) {
 
-  const selector = {
-  namespace: 'mock',
-      select: {
-          labels: {
-              app: "metrics-api-test-metrics-server"
-          }
-        }
-  }
+  if (__ENV.INJECT_FAULTS != "1") {
+    return
+}
 
-  const podDisruptor = new PodDisruptor(selector)
+ 
   const fault = {
   averageDelay: '30s',
   port: 8080
-  }
-  
-  podDisruptor.injectHTTPFaults(fault, "1m")
+  };
+
+  const svcDisruptor = new ServiceDisruptor('metrics-api-test-service', 'mock');
+  svcDisruptor.injectHTTPFaults(fault, '60s');
+ 
 
 }
 
