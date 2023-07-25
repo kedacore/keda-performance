@@ -70,11 +70,11 @@ generate-k6:
 	xk6 build \
     	--output /usr/local/bin/k6 \
 		--with github.com/szkiba/xk6-yaml@latest \
-		--with github.com/grafana/xk6-kubernetes \
-		--with github.com/grafana/xk6-disruptor
+		--with github.com/grafana/xk6-kubernetes@latest \
+		--with github.com/grafana/xk6-disruptor@latest
 
 login-k6:
 	@k6 login cloud --token $(TF_GRAFANA_TOKEN)
 
-excute-k6:
+execute-k6:
 	k6 run --out cloud test.js

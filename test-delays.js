@@ -3,6 +3,7 @@ import deployment from "./shared/create-deployment.js"
 import updatedeployment from "./shared/update-deployment.js"
 import updatesscaleobject from "./shared/update-scaleobject.js"
 import deletenamespace from "./shared/delete-namespace.js"
+import { describe, expect } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
 
 import { group, sleep } from "k6";
 import exec from 'k6/execution';
@@ -34,7 +35,7 @@ export const options = {
         maxVUs: 10,
         exec: "default",
         startTime: "10s",
-        duration: "60s",
+        duration: "300s",
     },
     disrupt: {
         executor: 'shared-iterations',
@@ -48,7 +49,7 @@ export const options = {
       iterations: 1,
       vus: 1,
       exec: "teardown",
-      startTime: "120s"
+      startTime: "600s"
     } 
   }, 
   ext: {
@@ -90,16 +91,29 @@ export function disrupt(data) {
 
  
   const fault = {
-  averageDelay: '30s',
-  port: 8080
+  averageDelay: '3s'
   };
 
   const svcDisruptor = new ServiceDisruptor('metrics-api-test-service', 'mock');
-  svcDisruptor.injectHTTPFaults(fault, '60s');
- 
+  svcDisruptor.injectHTTPFaults(fault, "60s", {"ProxyPort": 8000} );
+
+
+/*
+  const selector = {
+    namespace: 'mock',
+        select: {
+            labels: {
+                app: "metrics-api-test-metrics-server"
+            }
+          }
+    };
+
+  const podDisruptor = new PodDisruptor(selector);
+  podDisruptor.injectHTTPFaults(fault, "1m");
+
+ */
 
 }
-
 
 export function teardown() {
   console.debug
