@@ -13,6 +13,11 @@ TF_GRAFANA_TOKEN ?= token
 
 KEDA_VERSION ?= main
 
+GRAFANA_PROMETHEUS_URL_PUSH ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom/push
+GRAFANA_PROMETHEUS_URL_QUERY ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom
+
+K6_ENVS ?= PROMETHEUS_URL="$(GRAFANA_PROMETHEUS_URL_QUERY)" PROMETHEUS_USER="$(TF_GRAFANA_PROMETHEUS_USER)" PROMETHEUS_PASSWORD="$(TF_GRAFANA_PROMETHEUS_PASSWORD)"
+
 ##################################################
 # Kubernetes context                             #
 ##################################################
@@ -50,7 +55,7 @@ deploy-prometheus:
 	kubectl label ns/performance-prometheus type=e2e
 	@helm upgrade --install prometheus \
 					prometheus-community/prometheus \
-					--set server.remoteWrite[0].url=$(TF_GRAFANA_PROMETHEUS_URL) \
+					--set server.remoteWrite[0].url=$(GRAFANA_PROMETHEUS_URL_PUSH) \
 					--set server.remoteWrite[0].basic_auth.username=$(TF_GRAFANA_PROMETHEUS_USER) \
 					--set server.remoteWrite[0].basic_auth.password=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
 					-f deps/prometheus/values.yaml \
@@ -68,13 +73,14 @@ undeploy-prometheus:
 generate-k6:
 	go install go.k6.io/xk6/cmd/xk6@latest
 	xk6 build \
-    	--output /usr/local/bin/k6 \
+		--output ./k6 \
 		--with github.com/szkiba/xk6-yaml@latest \
 		--with github.com/grafana/xk6-kubernetes@latest \
-		--with github.com/grafana/xk6-disruptor@latest
+		--with github.com/grafana/xk6-disruptor@latest \
+		--with github.com/JorTurFer/xk6-input-prometheus
 
 login-k6:
-	@k6 login cloud --token $(TF_GRAFANA_TOKEN)
+	@./k6 login cloud --token $(TF_GRAFANA_TOKEN)
 
 execute-k6:
-	k6 run --out cloud test.js
+	@$(K6_ENVS) ./k6 run --out cloud test.js
