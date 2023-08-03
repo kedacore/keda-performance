@@ -4,3 +4,4 @@ metadata:
   name: mock
   labels:
     k6.io/created_by: xk6-kubernetes
+    type: e2e
