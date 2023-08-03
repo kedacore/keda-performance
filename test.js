@@ -43,6 +43,7 @@ export function setup() {
   deploynamespace(workloadnamespace);
 
   for (var iteration = 0; iteration < scaledObjectCount; iteration++) {
+    console.log(`${iteration} of ${scaledObjectCount} created`);
     updatedeployment(workloaddeployment, iteration);
     updatesscaleobject(yamlscaleobject, iteration);
   }
