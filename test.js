@@ -20,6 +20,7 @@ const scaledObjectCount = 1000;
 
 export const options = {
   vus: 1,
+  setupTimeout: "15m",
   duration: "5m",
   ext: {
     loadimpact: {
