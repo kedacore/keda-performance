@@ -38,6 +38,7 @@ get-cluster-context: az-login ## Get Azure cluster context.
 deploy: deploy-keda deploy-prometheus
 
 undeploy: undeploy-prometheus undeploy-keda
+	kubectl delete ns -l type=e2e
 
 deploy-keda:
 	mkdir -p deps
