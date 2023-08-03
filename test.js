@@ -6,6 +6,7 @@ import deletenamespace from "./shared/delete-namespace.js"
 
 import { sleep, check } from "k6";
 import exec from 'k6/execution';
+import { Gauge } from 'k6/metrics';
 import { Kubernetes } from 'k6/x/kubernetes';
 import prometheus from 'k6/x/prometheusread';
 
