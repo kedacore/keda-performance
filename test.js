@@ -22,7 +22,7 @@ export const GaugeInternalLatency = new Gauge('Internal Latency');
 
 export const options = {
   vus: 1,
-  duration: '10m',
+  duration: '1m',
   ext: {
     loadimpact: {
       // Project: kedacore
@@ -52,11 +52,13 @@ export function setup() {
     updatedeployment(workloaddeployment,iteration);
     sleep(5);
     updatesscaleobject(yamlscaleobject,iteration);
+
+    checkLag()
   }
 
   export function teardown() {
     console.debug
-    checkLag()
+    // checkLag()
     deletenamespace(mocknamespace);
     deletenamespace(workloadnamespace);
     sleep(10);
