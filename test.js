@@ -76,7 +76,7 @@ export function setup() {
         var jsonBytes = item.marshalJSON()
         var {_, values} = JSON.parse(String.fromCharCode(...jsonBytes))
         values.forEach(value => {
-          GaugeInternalLatency.add(value)
+          GaugeInternalLatency.add(value[1])
         })
       });
     }    
