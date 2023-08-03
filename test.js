@@ -17,6 +17,8 @@ const mocknamespace = open("./mock/mock-namespace.yaml")
 const mockservice = open("./mock/mock-service.yaml")
 
 
+export const GaugeInternalLatency = new Gauge('Internal Latency');
+
 export const options = {
   vus: 1,
   duration: '10m',
@@ -27,7 +29,10 @@ export const options = {
       // Test runs with the same name groups test runs together
       name: 'ScaleObjects'
     }
-  }
+  },
+  thresholds: {
+    'Internal Latency': ['value<100'],   
+  },
 };
 
 export function setup() {    
@@ -64,21 +69,12 @@ export function setup() {
       var period = "minute"
       
       var response = client.queryRange("max(keda_internal_scale_loop_latency)", start.toISOString(), end.toISOString(), period)
-
-      check(response, {
-        'keda_internal_scale_loop_latency is below than 100ms': (res) => {
-          var pass = true
-          res.forEach(item => {   
-            var jsonBytes = item.marshalJSON()
-            var {_, values} = JSON.parse(String.fromCharCode(...jsonBytes))
-            values.forEach(value => {
-              if (value[1] >= 100){
-                pass = false
-              }
-            })
-          });
-          return pass
-        },
-      });        
+      response.forEach(item => {   
+        var jsonBytes = item.marshalJSON()
+        var {_, values} = JSON.parse(String.fromCharCode(...jsonBytes))
+        values.forEach(value => {
+          GaugeInternalLatency.add(value)
+        })
+      });
     }    
   }
