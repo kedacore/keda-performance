@@ -60,7 +60,9 @@ class Funk {
   _brokenChainCheck() {
     if (this.chainBroken) {
       if (!this.printedBrokenChainWarning) {
-        console.warn("This check has been aborted because the previous check in the chain has failed");
+        console.warn(
+          "This check has been aborted because the previous check in the chain has failed"
+        );
         this.printedBrokenChainWarning = true;
       }
       return true;
@@ -119,7 +121,9 @@ class Funk {
 
     this.rightHandValue = rhv;
 
-    let checkName = `${this.leftHandValueName || this.leftHandValue} is greater than ${this.rightHandValue}`;
+    let checkName = `${
+      this.leftHandValueName || this.leftHandValue
+    } is greater than ${this.rightHandValue}`;
 
     let checkIsSuccessful = this.leftHandValue > this.rightHandValue;
 
@@ -135,7 +139,9 @@ class Funk {
 
     this.rightHandValue = rhv;
 
-    let checkName = `${this.leftHandValueName || this.leftHandValue} is greater or equal to ${this.rightHandValue}`;
+    let checkName = `${
+      this.leftHandValueName || this.leftHandValue
+    } is greater or equal to ${this.rightHandValue}`;
 
     let checkIsSuccessful = this.leftHandValue >= this.rightHandValue;
 
@@ -150,7 +156,9 @@ class Funk {
 
     this.rightHandValue = rhv;
 
-    let checkName = `${this.leftHandValueName || this.leftHandValue} is less than ${this.rightHandValue}`;
+    let checkName = `${
+      this.leftHandValueName || this.leftHandValue
+    } is less than ${this.rightHandValue}`;
 
     let checkIsSuccessful = this.leftHandValue < this.rightHandValue;
 
@@ -165,7 +173,9 @@ class Funk {
 
     this.rightHandValue = rhv;
 
-    let checkName = `${this.leftHandValueName || this.leftHandValue} is less or equal to ${this.rightHandValue}`;
+    let checkName = `${
+      this.leftHandValueName || this.leftHandValue
+    } is less or equal to ${this.rightHandValue}`;
 
     let checkIsSuccessful = this.leftHandValue <= this.rightHandValue;
 
@@ -179,7 +189,9 @@ class Funk {
   toBeTruthy() {
     if (this._brokenChainCheck()) return this;
 
-    let checkName = `${this.leftHandValueName || this.leftHandValue} is truthy.`;
+    let checkName = `${
+      this.leftHandValueName || this.leftHandValue
+    } is truthy.`;
 
     let checkIsSuccessful = this.leftHandValue ? true : false;
 
@@ -195,9 +207,12 @@ class Funk {
 
     this.rightHandValue = `${from} - ${to}`;
 
-    let checkName = `${this.leftHandValueName || this.leftHandValue} is between ${this.rightHandValue}`;
+    let checkName = `${
+      this.leftHandValueName || this.leftHandValue
+    } is between ${this.rightHandValue}`;
 
-    let checkIsSuccessful = this.leftHandValue >= from && this.leftHandValue <= to;
+    let checkIsSuccessful =
+      this.leftHandValue >= from && this.leftHandValue <= to;
 
     this._recordCheck(checkName, checkIsSuccessful, this.leftHandValue);
 
@@ -222,7 +237,9 @@ let expect = function (value1) {
 };
 
 function handleUnexpectedException(e, testName) {
-  console.error(`Exception raised in test "${testName}". Failing the test and continuing. \n${e}`);
+  console.error(
+    `Exception raised in test "${testName}". Failing the test and continuing. \n${e}`
+  );
 
   check(null, {
     [`Exception raised "${e}"`]: false,

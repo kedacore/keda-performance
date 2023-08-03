@@ -13,8 +13,8 @@ spec:
   triggers:
     - metadata:
         method: query
-        targetValue: '1'
-        url: >- 
+        targetValue: "1"
+        url: >-
           http://metrics-api-test-service.mock:8080/api/value
         valueLocation: value
       type: metrics-api
