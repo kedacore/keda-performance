@@ -21,6 +21,7 @@ const scaledObjectCount = 1000;
 export const options = {
   vus: 1,
   setupTimeout: "20m",
+  teardownTimeout: "2m",
   duration: "5m",
   ext: {
     loadimpact: {
@@ -54,7 +55,7 @@ export function setup() {
     tries++;
     sleep(15);
     currentScaledObjectCount = getResourcesCount("scaled_object");
-  } while (currentScaledObjectCount < scaledObjectCount && tries < 6);
+  } while (currentScaledObjectCount < scaledObjectCount && tries <= 6);
 }
 
 export default function () {
@@ -64,9 +65,16 @@ export default function () {
 
 export function teardown() {
   console.debug;
-  deletenamespace(mocknamespace);
   deletenamespace(workloadnamespace);
-  sleep(10);
+  deletenamespace(mocknamespace);
+
+  let currentScaledObjectCount = 0;
+  let tries = 0;
+  do {
+    tries++;
+    sleep(15);
+    currentScaledObjectCount = getResourcesCount("scaled_object");
+  } while (currentScaledObjectCount > 0 && tries <= 6);
 }
 
 function checkLag() {
