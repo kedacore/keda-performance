@@ -31,6 +31,11 @@ export const options = {
 };
 
 export function setup() {
+  // Set random prefixes to namespaces to make them unique
+  let executionId = parseInt(Math.random() * 1000);
+  mock.setExecutionId(executionId);
+  workload.setExecutionId(executionId);
+
   // Deploy the mock
   kubernetes.applyManifest(mock.getMockNamespaceManifest());
   kubernetes.applyManifest(mock.getMockDeploymentManifest(10));

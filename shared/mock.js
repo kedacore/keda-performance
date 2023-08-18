@@ -1,5 +1,7 @@
-const namespace = "mock-ns";
+const namespaceBase = "mock-ns";
 const serviceName = "mock-service";
+
+let namespace = namespaceBase;
 
 export function getMockNamespaceManifest() {
   return `apiVersion: v1
@@ -56,4 +58,8 @@ export function getMockEndpoint() {
 
 export function getNamespaceName() {
   return namespace;
+}
+
+export function setExecutionId(id) {
+  namespace = `${id}-${namespaceBase}`;
 }

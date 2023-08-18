@@ -1,12 +1,13 @@
 import { getMockEndpoint } from "./mock.js";
 
-const testNamespace = "scaledobject-test-ns";
+const namespaceBase = "scaledobject-test-ns";
+let namespace = namespaceBase;
 
 export function getWorkloadNamespaceManifest() {
   return `apiVersion: v1
 kind: Namespace
 metadata:
-  name: ${testNamespace}
+  name: ${namespace}
   labels:
     k6.io/created_by: xk6-kubernetes
     type: e2e`;
@@ -17,7 +18,7 @@ export function getWorkloadDeploymentManifest(index) {
 kind: Deployment
 metadata:
   name: workload-${index}
-  namespace: ${testNamespace}
+  namespace: ${namespace}
 spec:
   replicas: 0
   selector:
@@ -52,7 +53,7 @@ export function getWorkloadScaledObjectManifest(index, metricsPerWorkload) {
 kind: ScaledObject
 metadata:
   name: scaledobject-${index}
-  namespace: ${testNamespace}
+  namespace: ${namespace}
 spec:
   cooldownPeriod: 1
   maxReplicaCount: 2
@@ -65,5 +66,9 @@ ${triggers}`;
 }
 
 export function getNamespaceName() {
-  return testNamespace;
+  return namespace;
+}
+
+export function setExecutionId(id) {
+  namespace = `${id}-${namespaceBase}`;
 }
