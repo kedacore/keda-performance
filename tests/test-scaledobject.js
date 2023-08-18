@@ -17,7 +17,7 @@ export const options = {
   vus: 1,
   setupTimeout: "20m",
   teardownTimeout: "2m",
-  duration: "30s",
+  duration: "5m",
   ext: {
     loadimpact: {
       // Project: kedacore
