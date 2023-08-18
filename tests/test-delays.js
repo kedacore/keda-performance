@@ -1,8 +1,8 @@
-import deploynamespace from "./shared/namespace-operations.js";
-import deployment from "./shared/create-deployment.js";
-import updatedeployment from "./shared/update-deployment.js";
-import updatesscaleobject from "./shared/update-scaleobject.js";
-import deletenamespace from "./shared/delete-namespace.js";
+import deploynamespace from "../shared/namespace-operations.js";
+import deployment from "../shared/create-deployment.js";
+import updatedeployment from "../shared/update-deployment.js";
+import updatesscaleobject from "../shared/update-scaleobject.js";
+import deletenamespace from "../shared/delete-namespace.js";
 import {
   describe,
   expect,
