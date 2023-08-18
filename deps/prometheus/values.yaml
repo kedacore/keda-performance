@@ -53,3 +53,7 @@ kubeStateMetrics:
   enabled: false
 nodeExporter:
   enabled: false
+kube-state-metrics:
+  enabled: false
+prometheus-node-exporter:
+  enabled: false
