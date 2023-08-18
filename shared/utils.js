@@ -1,5 +1,6 @@
 import * as prometheus from "./prometheus.js";
 import { sleep } from "k6";
+import crypto from "k6/crypto";
 
 export function waitForResourceCount(type, expected, maxTries, interval) {
   let currentScaledObjectCount = 0;
@@ -16,16 +17,6 @@ export function waitForResourceCount(type, expected, maxTries, interval) {
   }
 }
 
-export function generateNamespace(name) {
-  return {
-    apiVersion: "v1",
-    kind: "Namespace",
-    metadata: {
-      name: name,
-      labels: {
-        "k6.io/created_by": "xk6-kubernetes",
-        type: "e2e",
-      },
-    },
-  };
+export function generatePrefix(testCase) {
+  return crypto.sha256(testCase, "hex").substring(0, 8);
 }

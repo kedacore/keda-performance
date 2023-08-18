@@ -32,7 +32,7 @@ export const options = {
 
 export function setup() {
   // Set random prefixes to namespaces to make them unique
-  let executionId = parseInt(Math.random() * 1000);
+  let executionId = utils.generatePrefix(options.ext.loadimpact.name);
   mock.setExecutionId(executionId);
   workload.setExecutionId(executionId);
 
@@ -61,6 +61,11 @@ export default function () {
 
 export function teardown() {
   describe("Cleanup resources", () => {
+    // Set random prefixes to namespaces to make them unique
+    let executionId = utils.generatePrefix(options.ext.loadimpact.name);
+    mock.setExecutionId(executionId);
+    workload.setExecutionId(executionId);
+
     kubernetes.deleteNamespace(workload.getNamespaceName());
     kubernetes.deleteNamespace(mock.getNamespaceName());
 
