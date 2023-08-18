@@ -1,0 +1,11 @@
+{
+    "scenarios": {
+      "load": {
+        "executor": "per-vu-iterations",
+        "exec": "default", 
+        "interations": 100,
+        "VUs": 1,
+        "maxDuration": "1m"
+      }
+    }
+  }

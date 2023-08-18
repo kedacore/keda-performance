@@ -35,7 +35,7 @@ jobs:
         run: make login-k6
 
       - name: Execute performance tests
-        run: make excute-k6
+        run: make execute-k6
 
       - name: Cleanup dependencies
         run: make undeploy
