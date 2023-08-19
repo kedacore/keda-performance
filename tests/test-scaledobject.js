@@ -57,7 +57,7 @@ export function setup() {
     workload.getNamespaceName(),
     "scaled_object",
     scaledObjectCount,
-    6,
+    20,
     15
   );
 }
@@ -75,8 +75,8 @@ export function teardown() {
     utils.waitForResourceCount(
       workload.getNamespaceName(),
       "scaled_object",
-      scaledObjectCount,
-      6,
+      0,
+      20,
       15
     );
   });
