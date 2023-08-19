@@ -90,10 +90,16 @@ execute-k6: execute-k6-scaledobjects-cases
 execute-k6-scaledobjects-cases: case-n-scaledobjects-single-metric case-single-scaledobject-n-metrics case-n-scaledobjects-n-metrics
 
 case-n-scaledobjects-single-metric:
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=500 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1000 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
 
 case-single-scaledobject-n-metrics:
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=100 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=500 ./k6 run --out cloud tests/test-scaledobject.js
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=1000 ./k6 run --out cloud tests/test-scaledobject.js
 
 case-n-scaledobjects-n-metrics:
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=50 TARGET_METRICS=20 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=10 ./k6 run --out cloud tests/test-scaledobject.js
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=500 TARGET_METRICS=2 ./k6 run --out cloud tests/test-scaledobject.js
