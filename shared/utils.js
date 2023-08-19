@@ -1,6 +1,8 @@
 import * as prometheus from "./prometheus.js";
+
 import { sleep } from "k6";
 import crypto from "k6/crypto";
+import { Gauge } from "k6/metrics";
 
 export function waitForResourceCount(
   namespace,
@@ -25,4 +27,10 @@ export function waitForResourceCount(
 
 export function generatePrefix(testCase) {
   return crypto.md5(testCase, "hex");
+}
+
+export function generateGauge(name){
+  var gauge = new Gauge(name);
+  gauge.add(0);
+  return gauge;
 }

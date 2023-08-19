@@ -7,9 +7,8 @@ import * as workload from "../shared/scaledobject-workload.js";
 
 import { sleep } from "k6";
 import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
-import { Gauge } from "k6/metrics";
 
-const GaugeKEDAInternalLatency = new Gauge("keda_internal_latency");
+const GaugeKEDAInternalLatency = utils.generateGauge("keda_internal_latency");
 const scaledObjectCount = config.getTargetScalableObjectCount();
 const metricsPerScaledObject = config.getTargetMetricCount();
 const testCaseName = `${scaledObjectCount}-ScaleObjects-${metricsPerScaledObject}-Metrics`;
@@ -62,9 +61,9 @@ export function setup() {
   );
 }
 
-export default function () {
+export default function () {  
   GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
-  sleep(15);
+  sleep(10);
 }
 
 export function teardown() {
