@@ -30,11 +30,7 @@ extraScrapeConfigs: |
 server:
   remoteWrite:
   - write_relabel_configs:
-    # KEDA metrics used during tests
+    # KEDA metrics used during tests and Container usage metrics
     - source_labels: [__name__]
-      regex: "keda_internal_scale_loop_latency|keda_resource_totals"
-      action: keep
-    # Container usage metrics
-    - source_labels: [__name__]
-      regex: "^container_.*"
+      regex: "keda_internal_scale_loop_latency|keda_resource_totals|^container_.*"
       action: keep
