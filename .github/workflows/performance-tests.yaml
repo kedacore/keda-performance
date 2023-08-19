@@ -39,3 +39,4 @@ jobs:
 
       - name: Cleanup dependencies
         run: make undeploy
+        if: ${{ always() }}
