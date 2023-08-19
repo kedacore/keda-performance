@@ -61,9 +61,9 @@ export function setup() {
   );
 }
 
-export default function () {  
-  GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
+export default function () {
   sleep(10);
+  GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
 
 export function teardown() {

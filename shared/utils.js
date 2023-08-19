@@ -31,6 +31,5 @@ export function generatePrefix(testCase) {
 
 export function generateGauge(name){
   var gauge = new Gauge(name);
-  gauge.add(0);
   return gauge;
 }
