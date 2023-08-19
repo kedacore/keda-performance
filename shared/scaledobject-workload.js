@@ -69,6 +69,6 @@ export function getNamespaceName() {
   return namespace;
 }
 
-export function setExecutionId(id) {
+export function setExecutionPrefix(id) {
   namespace = `${id}-${namespaceBase}`;
 }

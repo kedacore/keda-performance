@@ -18,5 +18,5 @@ export function waitForResourceCount(type, expected, maxTries, interval) {
 }
 
 export function generatePrefix(testCase) {
-  return crypto.sha256(testCase, "hex").substring(0, 8);
+  return crypto.md5(testCase, "hex");
 }

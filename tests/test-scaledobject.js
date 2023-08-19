@@ -9,9 +9,14 @@ import { sleep } from "k6";
 import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
 import { Gauge } from "k6/metrics";
 
-export const GaugeKEDAInternalLatency = new Gauge("keda_internal_latency");
-let scaledObjectCount = config.getTargetScalableObjectCount();
-let metricsPerScaledObject = config.getTargetMetricCount();
+const GaugeKEDAInternalLatency = new Gauge("keda_internal_latency");
+const scaledObjectCount = config.getTargetScalableObjectCount();
+const metricsPerScaledObject = config.getTargetMetricCount();
+const testCaseName = `${scaledObjectCount}-ScaleObjects-${metricsPerScaledObject}-Metrics`;
+// Set random prefixes to namespaces to make them unique
+const casePrefix = utils.generatePrefix(testCaseName);
+mock.setExecutionPrefix(casePrefix);
+workload.setExecutionPrefix(casePrefix);
 
 export const options = {
   vus: 1,
@@ -22,7 +27,7 @@ export const options = {
     loadimpact: {
       // Project: kedacore
       projectID: 3645343,
-      name: `${scaledObjectCount}-ScaleObjects-${metricsPerScaledObject}-Metrics`,
+      name: testCaseName,
     },
   },
   thresholds: {
@@ -31,10 +36,7 @@ export const options = {
 };
 
 export function setup() {
-  // Set random prefixes to namespaces to make them unique
-  let executionId = utils.generatePrefix(options.ext.loadimpact.name);
-  mock.setExecutionId(executionId);
-  workload.setExecutionId(executionId);
+  console.log(`Executing test case: "${testCaseName} - ${casePrefix}"`);
 
   // Deploy the mock
   kubernetes.applyManifest(mock.getMockNamespaceManifest());
@@ -55,17 +57,12 @@ export function setup() {
 }
 
 export default function () {
-  GaugeKEDAInternalLatency.add(prometheus.getLag());
+  GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
   sleep(15);
 }
 
 export function teardown() {
   describe("Cleanup resources", () => {
-    // Set random prefixes to namespaces to make them unique
-    let executionId = utils.generatePrefix(options.ext.loadimpact.name);
-    mock.setExecutionId(executionId);
-    workload.setExecutionId(executionId);
-
     kubernetes.deleteNamespace(workload.getNamespaceName());
     kubernetes.deleteNamespace(mock.getNamespaceName());
 

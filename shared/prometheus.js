@@ -30,7 +30,7 @@ export function getResourcesCount(type) {
   return scaledObjectCount;
 }
 
-export function getLag() {
+export function getLag(namespace) {
   if (__ENV.PROMETHEUS_URL != "") {
     var client = prometheus.newPrometheusClient(
       __ENV.PROMETHEUS_URL,
@@ -42,7 +42,7 @@ export function getLag() {
     var period = "minute";
 
     var response = client.queryRange(
-      "max(keda_internal_scale_loop_latency)",
+      `max(keda_internal_scale_loop_latency{namespace="${namespace}"})`,
       start.toISOString(),
       end.toISOString(),
       period
