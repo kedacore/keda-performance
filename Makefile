@@ -96,7 +96,7 @@ case-n-scaledobjects-single-metric:
 
 case-single-scaledobject-n-metrics: 
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=100 ./k6 run --out cloud tests/test-scaledobject.js
-@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=500 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=500 ./k6 run --out cloud tests/test-scaledobject.js
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=1000 ./k6 run --out cloud tests/test-scaledobject.js
 
 case-n-scaledobjects-n-metrics: 
