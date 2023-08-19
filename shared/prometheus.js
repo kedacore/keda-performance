@@ -12,7 +12,7 @@ export function getResourcesCount(namespace, type) {
     var period = "minute";
 
     var response = client.queryRange(
-      `keda_resource_totals{namespace="${namespace},type="${type}"}`,
+      `keda_resource_totals{namespace="${namespace}",type="${type}"}`,
       start.toISOString(),
       end.toISOString(),
       period

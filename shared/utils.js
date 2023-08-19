@@ -16,7 +16,7 @@ export function waitForResourceCount(
     sleep(interval);
     currentScaledObjectCount = prometheus.getResourcesCount(namespace, type);
   } while (currentScaledObjectCount != expected && tries < maxTries);
-  if (tries > maxTries) {
+  if (currentScaledObjectCount != expected) {
     throw Error(
       `expected resource count not reached afer ${tries} tries. Expected ${expected}, got ${currentScaledObjectCount}`
     );

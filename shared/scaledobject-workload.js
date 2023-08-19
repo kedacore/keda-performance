@@ -46,7 +46,7 @@ export function getWorkloadScaledObjectManifest(index, metricsPerWorkload) {
         url: ${getMockEndpoint()}
         valueLocation: value
       name: metric-${i}
-      type: metrics-api`);
+      type: metrics-api\n`);
   }
 
   return `apiVersion: keda.sh/v1alpha1
