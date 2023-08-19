@@ -37,8 +37,7 @@ get-cluster-context: az-login ## Get Azure cluster context.
 
 deploy: deploy-keda deploy-prometheus
 
-undeploy: undeploy-prometheus undeploy-keda
-	kubectl delete ns -l type=e2e
+undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-keda	
 
 deploy-keda:
 	mkdir -p deps
@@ -66,6 +65,9 @@ deploy-prometheus:
 undeploy-prometheus:
 	helm uninstall prometheus -n performance-prometheus
 	kubectl delete ns performance-prometheus
+
+clean-up-testing-namespaces:
+	kubectl delete ns -l type=e2e
 
 ##################################################
 # Grafana k6                                     #
