@@ -20,8 +20,8 @@ workload.setExecutionPrefix(casePrefix);
 
 export const options = {
   vus: 1,
-  setupTimeout: "20m",
-  teardownTimeout: "2m",
+  setupTimeout: "10m",
+  teardownTimeout: "10m",
   duration: "5m",
   ext: {
     loadimpact: {
