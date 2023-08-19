@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: mock
-  labels:
-    k6.io/created_by: xk6-kubernetes

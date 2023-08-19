@@ -15,6 +15,7 @@ KEDA_VERSION ?= main
 
 GRAFANA_PROMETHEUS_URL_PUSH ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom/push
 GRAFANA_PROMETHEUS_URL_QUERY ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom
+PROMETHEUS_NAMESPACE ?= prometheus-performance
 
 K6_ENVS ?= PROMETHEUS_URL="$(GRAFANA_PROMETHEUS_URL_QUERY)" PROMETHEUS_USER="$(TF_GRAFANA_PROMETHEUS_USER)" PROMETHEUS_PASSWORD="$(TF_GRAFANA_PROMETHEUS_PASSWORD)"
 
@@ -37,7 +38,7 @@ get-cluster-context: az-login ## Get Azure cluster context.
 
 deploy: deploy-keda deploy-prometheus
 
-undeploy: undeploy-prometheus undeploy-keda
+undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-keda	
 
 deploy-keda:
 	mkdir -p deps
@@ -51,20 +52,22 @@ undeploy-keda:
 deploy-prometheus:
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo update
-	kubectl create ns performance-prometheus
-	kubectl label ns/performance-prometheus type=e2e
 	@helm upgrade --install prometheus \
 					prometheus-community/prometheus \
 					--set server.remoteWrite[0].url=$(GRAFANA_PROMETHEUS_URL_PUSH) \
 					--set server.remoteWrite[0].basic_auth.username=$(TF_GRAFANA_PROMETHEUS_USER) \
 					--set server.remoteWrite[0].basic_auth.password=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
 					-f deps/prometheus/values.yaml \
-					--namespace performance-prometheus \
+					--namespace $(PROMETHEUS_NAMESPACE) \
+					--create-namespace \
 					--wait
 
 undeploy-prometheus:
-	helm uninstall prometheus -n performance-prometheus
-	kubectl delete ns performance-prometheus
+	helm uninstall prometheus -n $(PROMETHEUS_NAMESPACE)
+	kubectl delete ns $(PROMETHEUS_NAMESPACE)
+
+clean-up-testing-namespaces:
+	kubectl delete ns -l type=e2e
 
 ##################################################
 # Grafana k6                                     #
@@ -82,5 +85,21 @@ generate-k6:
 login-k6:
 	@./k6 login cloud --token $(TF_GRAFANA_TOKEN)
 
-execute-k6:
-	@$(K6_ENVS) ./k6 run --out cloud test.js
+execute-k6: execute-k6-scaledobjects-cases
+
+execute-k6-scaledobjects-cases: case-n-scaledobjects-single-metric case-single-scaledobject-n-metrics case-n-scaledobjects-n-metrics
+
+case-n-scaledobjects-single-metric:
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=10 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1000 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
+
+case-single-scaledobject-n-metrics:
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=10 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=100 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=1000 ./k6 run --out cloud tests/test-scaledobject.js
+
+case-n-scaledobjects-n-metrics:
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=2 TARGET_METRICS=500 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=10 ./k6 run --out cloud tests/test-scaledobject.js
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=500 TARGET_METRICS=2 ./k6 run --out cloud tests/test-scaledobject.js
