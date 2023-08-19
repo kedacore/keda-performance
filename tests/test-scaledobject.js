@@ -53,7 +53,13 @@ export function setup() {
   }
 
   // Wait until KEDA has starting to process all the load
-  utils.waitForResourceCount("scaled_object", scaledObjectCount, 6, 15);
+  utils.waitForResourceCount(
+    workload.getNamespaceName(),
+    "scaled_object",
+    scaledObjectCount,
+    6,
+    15
+  );
 }
 
 export default function () {
@@ -66,6 +72,12 @@ export function teardown() {
     kubernetes.deleteNamespace(workload.getNamespaceName());
     kubernetes.deleteNamespace(mock.getNamespaceName());
 
-    utils.waitForResourceCount("scaled_object", scaledObjectCount, 6, 15);
+    utils.waitForResourceCount(
+      workload.getNamespaceName(),
+      "scaled_object",
+      scaledObjectCount,
+      6,
+      15
+    );
   });
 }

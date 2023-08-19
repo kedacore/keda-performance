@@ -1,6 +1,6 @@
 import prometheus from "k6/x/prometheusread";
 
-export function getResourcesCount(type) {
+export function getResourcesCount(namespace, type) {
   if (__ENV.PROMETHEUS_URL != "") {
     var client = prometheus.newPrometheusClient(
       __ENV.PROMETHEUS_URL,
@@ -12,7 +12,7 @@ export function getResourcesCount(type) {
     var period = "minute";
 
     var response = client.queryRange(
-      `keda_resource_totals{type="${type}"}`,
+      `keda_resource_totals{namespace="${namespace},type="${type}"}`,
       start.toISOString(),
       end.toISOString(),
       period
