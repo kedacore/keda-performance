@@ -36,7 +36,7 @@ export const options = {
 };
 
 export function setup() {
-  console.log(`Executing test case: "${testCaseName} - ${casePrefix}"`);
+  console.log(`Executing test case: ${testCaseName} - ${casePrefix}`);
 
   // Deploy the mock
   kubernetes.applyManifest(mock.getMockNamespaceManifest());
