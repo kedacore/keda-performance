@@ -59,8 +59,9 @@ export function setup() {
     20,
     15
   );
-  // Wait for metrics stabilization before starting the tests
-  utils.waitForLagStabilization(workload.getNamespaceName(), 100, 6, 10);
+
+  // Wait a minute to stabilizate prometheus metrics before the test
+  sleep(60);
 }
 
 export default function () {
