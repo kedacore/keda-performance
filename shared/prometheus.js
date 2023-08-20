@@ -25,14 +25,6 @@ export function getResourcesCount(namespace, type) {
     var { _, values } = JSON.parse(String.fromCharCode(...jsonBytes));
 
     var lastValue = values[values.length - 1];
-    console.log(
-      `Query: keda_resource_totals{namespace="${namespace}",type="${type}".
-      Start: ${start.toISOString()}. 
-      End ${end.toISOString()}. 
-      Period: ${period}.
-      Response: ${response}.
-      Value: ${lastValue[1]}`
-    );
     return lastValue[1];
   }
   return scaledObjectCount;
@@ -59,14 +51,6 @@ export function getLag(namespace) {
     var jsonBytes = lastItem.marshalJSON();
     var { _, values } = JSON.parse(String.fromCharCode(...jsonBytes));
     var lastValue = values[values.length - 1];
-    console.log(
-      `Query: max(keda_internal_scale_loop_latency{namespace="${namespace}"})".
-      Start: ${start.toISOString()}. 
-      End ${end.toISOString()}. 
-      Period: ${period}.
-      Response: ${response}.
-      Value: ${lastValue[1]}`
-    );
     return lastValue[1];
   }
 }
