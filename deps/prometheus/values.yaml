@@ -27,33 +27,10 @@ extraScrapeConfigs: |
       - targets:
         - keda-admission-webhooks.keda:8080
 
-alertmanager:
-  enabled: false
-prometheus-pushgateway:
-  enabled: false
-grafana:
-  enabled: false
-kubernetesServiceMonitors:
-  enabled: false
-kubeApiServer:
-  enabled: false
-kubelet:
-  enabled: false
-kubeControllerManager:
-  enabled: false
-coreDns:
-  enabled: false
-kubeEtcd:
-  enabled: false
-kubeScheduler:
-  enabled: false
-kubeProxy:
-  enabled: false
-kubeStateMetrics:
-  enabled: false
-nodeExporter:
-  enabled: false
-kube-state-metrics:
-  enabled: false
-prometheus-node-exporter:
-  enabled: false
+server:
+  remoteWrite:
+  - write_relabel_configs:
+    # KEDA metrics used during tests and Container usage metrics
+    - source_labels: [__name__]
+      regex: "keda_internal_scale_loop_latency|keda_resource_totals|^container_.*"
+      action: keep

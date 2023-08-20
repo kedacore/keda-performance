@@ -1,6 +1,8 @@
 import * as prometheus from "./prometheus.js";
+
 import { sleep } from "k6";
 import crypto from "k6/crypto";
+import { Gauge } from "k6/metrics";
 
 export function waitForResourceCount(
   namespace,
@@ -18,11 +20,16 @@ export function waitForResourceCount(
   } while (currentScaledObjectCount != expected && tries < maxTries);
   if (currentScaledObjectCount != expected) {
     throw Error(
-      `expected resource count not reached afer ${tries} tries. Expected ${expected}, got ${currentScaledObjectCount}`
+      `expected resource count not reached afer ${tries * interval} seconds. Expected ${expected}, got ${currentScaledObjectCount}`
     );
   }
 }
 
 export function generatePrefix(testCase) {
   return crypto.md5(testCase, "hex");
+}
+
+export function generateGauge(name){
+  var gauge = new Gauge(name);
+  return gauge;
 }
