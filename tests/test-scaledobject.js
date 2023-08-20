@@ -62,10 +62,10 @@ export function setup() {
 }
 
 export default function () {
-  sleep(10);
   let lag = prometheus.getLag(workload.getNamespaceName());
   console.log(`lag: ${lag}`);
   GaugeKEDAInternalLatency.add(lag);
+  sleep(10);
 }
 
 export function teardown() {
