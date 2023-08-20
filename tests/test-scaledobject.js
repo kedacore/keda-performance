@@ -59,13 +59,13 @@ export function setup() {
     20,
     15
   );
+  // Wait for metrics stabilization before starting the tests
+  utils.waitForLagStabilization(workload.getNamespaceName(), 100, 6, 10);
 }
 
 export default function () {
-  let lag = prometheus.getLag(workload.getNamespaceName());
-  console.log(`lag: ${lag}`);
-  GaugeKEDAInternalLatency.add(lag);
-  sleep(10);
+  sleep(5);
+  GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
 
 export function teardown() {

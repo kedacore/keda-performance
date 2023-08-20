@@ -8,7 +8,7 @@ export function getResourcesCount(namespace, type) {
       __ENV.PROMETHEUS_PASSWORD
     );
     var end = new Date();
-    var start = new Date(end.getTime() - 60 * 1000);
+    var start = new Date(end.getTime() - 30 * 1000);
     var period = "minute";
 
     var response = client.queryRange(
@@ -46,7 +46,7 @@ export function getLag(namespace) {
       __ENV.PROMETHEUS_PASSWORD
     );
     var end = new Date();
-    var start = new Date(end.getTime() - 60 * 1000);
+    var start = new Date(end.getTime() - 30 * 1000);
     var period = "minute";
 
     var response = client.queryRange(
