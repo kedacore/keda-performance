@@ -85,9 +85,10 @@ generate-k6:
 login-k6:
 	@./k6 login cloud --token $(TF_GRAFANA_TOKEN)
 
-execute-k6: execute-k6-scaledobjects-cases
+execute-k6: # execute-k6-scaledobjects-cases
+	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1000 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
 
-execute-k6-scaledobjects-cases: 
+execute-k6-scaledobjects-cases: # disabled temporally to reduce execution times + grafana VUs
 	# Increasing ScaledObject count (10, 100, 1000 metrics in total)
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=10 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
 	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js

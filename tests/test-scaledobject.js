@@ -19,7 +19,7 @@ workload.setExecutionPrefix(casePrefix);
 
 export const options = {
   vus: 1,
-  setupTimeout: "10m",
+  setupTimeout: "15m",
   teardownTimeout: "10m",
   duration: "5m",
   ext: {
@@ -59,10 +59,13 @@ export function setup() {
     20,
     15
   );
+
+  // Wait a minute to stabilizate prometheus metrics before the test
+  sleep(60);
 }
 
 export default function () {
-  sleep(10);
+  sleep(5);
   GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
 
