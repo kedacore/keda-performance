@@ -1,0 +1,12 @@
+{
+  "ext": {
+    "loadimpact": {
+      "projectID": 3645343,
+      "name": "10-ScaleObjects-10-Metrics"
+    },
+    "keda": {
+      "scaledobjects": 10,
+      "metricsPerScaledobject": 10
+    }
+  }
+}

@@ -1,3 +1,5 @@
 k6
 .vscode
 .env
+chart/*.js
+chart/*.json
