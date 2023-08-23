@@ -1,0 +1,36 @@
+apiVersion: k6.io/v1alpha1
+kind: K6
+metadata:
+  name: k6-case
+spec:
+  parallelism: {{ .Values.test.parallelism }}
+  script:
+    localFile: /repo/{{ .Values.test.file }}
+  arguments: --config /repo/{{ .Values.test.config }} {{ .Values.test.extraArgs }}
+  runner:
+    image: ghcr.io/kedacore/keda-k6-runner:9e4410f
+    serviceAccountName: k6-runner
+    volumes:
+      - name: git-repo
+        emptyDir: {}
+    volumeMounts:
+      - name: git-repo
+        mountPath: /repo
+    initContainers:
+    - name: repo-puller
+      image: bitnami/git
+      command:
+        - "git" 
+        - "clone"
+        - "-b"
+        - "{{ .Values.repo.branch }}"
+        - "{{ .Values.repo.url }}"
+        - "/repo"
+        - "--depth" 
+        - "1"
+      volumeMounts:
+        - name: git-repo
+          mountPath: /repo
+    envFrom:
+      - configMapRef:
+          name: extra-cm

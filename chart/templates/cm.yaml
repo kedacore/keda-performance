@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: extra-cm
+data:
+{{- range $key, $value := .Values.test.extraConfig }}
+  {{ upper $key }}: {{ $value | quote }} 
+{{- end -}}

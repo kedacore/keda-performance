@@ -1,4 +1,3 @@
-import * as config from "../shared/configuration.js";
 import * as prometheus from "../shared/prometheus.js";
 import * as kubernetes from "../shared/kubernetes.js";
 import * as utils from "../shared/utils.js";
@@ -7,34 +6,28 @@ import * as workload from "../shared/scaledobject-workload.js";
 
 import { sleep } from "k6";
 import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
+import exec from 'k6/execution';
 
 const GaugeKEDAInternalLatency = utils.generateGauge("keda_internal_latency");
-const scaledObjectCount = config.getTargetScalableObjectCount();
-const metricsPerScaledObject = config.getTargetMetricCount();
-const testCaseName = `${scaledObjectCount}-ScaleObjects-${metricsPerScaledObject}-Metrics`;
-// Set random prefixes to namespaces to make them unique
-const casePrefix = utils.generatePrefix(testCaseName);
-mock.setExecutionPrefix(casePrefix);
-workload.setExecutionPrefix(casePrefix);
 
 export const options = {
   vus: 1,
-  setupTimeout: "15m",
+  setupTimeout: "10m",
   teardownTimeout: "10m",
   duration: "5m",
-  ext: {
-    loadimpact: {
-      // Project: kedacore
-      projectID: 3645343,
-      name: testCaseName,
-    },
-  },
   thresholds: {
-    keda_internal_latency: ["value<100"],
-  },
-};
+    keda_internal_latency: ["value<100"]
+  }
+}
 
 export function setup() {
+  const testCaseName = exec.test.options.ext.loadimpact.name;
+  const scaledObjectCount = exec.test.options.ext.keda.scaledobjects;
+  const metricsPerScaledObject = exec.test.options.ext.keda.metricsPerScaledobject;
+  const casePrefix = utils.generatePrefix(testCaseName);
+  mock.setExecutionPrefix(casePrefix);
+  workload.setExecutionPrefix(casePrefix);
+
   console.log(`Executing test case: ${testCaseName} - ${casePrefix}`);
 
   // Deploy the mock
@@ -65,11 +58,15 @@ export function setup() {
 }
 
 export default function () {
+  workload.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
   sleep(5);
   GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
 
 export function teardown() {
+  const casePrefix = utils.generatePrefix(exec.test.options.ext.loadimpact.name);
+  mock.setExecutionPrefix(casePrefix);
+  workload.setExecutionPrefix(casePrefix);
   describe("Cleanup resources", () => {
     kubernetes.deleteNamespace(workload.getNamespaceName());
     kubernetes.deleteNamespace(mock.getNamespaceName());

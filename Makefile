@@ -16,8 +16,10 @@ KEDA_VERSION ?= main
 GRAFANA_PROMETHEUS_URL_PUSH ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom/push
 GRAFANA_PROMETHEUS_URL_QUERY ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom
 PROMETHEUS_NAMESPACE ?= prometheus-performance
-
-K6_ENVS ?= PROMETHEUS_URL="$(GRAFANA_PROMETHEUS_URL_QUERY)" PROMETHEUS_USER="$(TF_GRAFANA_PROMETHEUS_USER)" PROMETHEUS_PASSWORD="$(TF_GRAFANA_PROMETHEUS_PASSWORD)"
+K6_OPERATOR_NAMESPACE = k6-operator-system
+REPO_URL ?= https://github.com/kedacore/keda-performance.git
+REPO_BRANCH ?= main
+TEST_CONFIG ?= config.json
 
 ##################################################
 # Kubernetes context                             #
@@ -36,9 +38,9 @@ get-cluster-context: az-login ## Get Azure cluster context.
 # Deployments                                    #
 ##################################################
 
-deploy: deploy-keda deploy-prometheus
+deploy: deploy-keda deploy-k6-operator deploy-prometheus
 
-undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-keda	
+undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator undeploy-keda	
 
 deploy-keda:
 	mkdir -p deps
@@ -66,6 +68,20 @@ undeploy-prometheus:
 	helm uninstall prometheus -n $(PROMETHEUS_NAMESPACE)
 	kubectl delete ns $(PROMETHEUS_NAMESPACE)
 
+# we have to replace this with the helm chart when they release it
+# https://github.com/grafana/k6-operator/pull/98
+deploy-k6-operator:
+	mkdir -p deps
+	git clone https://github.com/grafana/k6-operator deps/k6-operator --depth 1	
+	make -C deps/k6-operator deploy
+	kubectl create secret generic k6-operator-cloud-token --from-literal="token=$(TF_GRAFANA_TOKEN)" -n $(K6_OPERATOR_NAMESPACE)
+	kubectl label secret k6-operator-cloud-token -n $(K6_OPERATOR_NAMESPACE) "k6cloud=token"
+	kubectl annotate secret k6-operator-cloud-token -n $(K6_OPERATOR_NAMESPACE) "kubernetes.io/service-account.name=k6-operator-controller"
+
+undeploy-k6-operator:
+	make -C deps/k6-operator delete
+	rm -rf deps/k6-operator
+
 clean-up-testing-namespaces:
 	kubectl delete ns -l type=e2e
 
@@ -73,33 +89,27 @@ clean-up-testing-namespaces:
 # Grafana k6                                     #
 ##################################################
 
-generate-k6:
-	go install go.k6.io/xk6/cmd/xk6@latest
-	xk6 build \
-		--output ./k6 \
-		--with github.com/szkiba/xk6-yaml@latest \
-		--with github.com/grafana/xk6-kubernetes@latest \
-		--with github.com/grafana/xk6-disruptor@latest \
-		--with github.com/JorTurFer/xk6-input-prometheus
+execute-k6: execute-k6-scaledobjects
+	
+execute-k6-scaledobjects:
+	@for file in $(shell find ./configs/scaledobjects -maxdepth 1 -not -type d); do \
+		make execute-k6-scaled-object-case TEST_CONFIG="$${file}" ; \
+	done
+	
+execute-k6-scaled-object-case:
+	@helm install k6-test \
+		chart	\
+		-n $(K6_OPERATOR_NAMESPACE) \
+		--create-namespace \
+		--set test.file=tests/test-scaledobject.js \
+		--set test.config=$(TEST_CONFIG) \
+		--set repo.url=$(REPO_URL) \
+		--set repo.branch=$(REPO_BRANCH) \
+		--set test.extraConfig.PROMETHEUS_URL=$(GRAFANA_PROMETHEUS_URL_QUERY) \
+		--set test.extraConfig.PROMETHEUS_USER=$(TF_GRAFANA_PROMETHEUS_USER) \
+		--set test.extraConfig.PROMETHEUS_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
+		--set test.extraArgs="--out cloud"
 
-login-k6:
-	@./k6 login cloud --token $(TF_GRAFANA_TOKEN)
+	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
-execute-k6: # execute-k6-scaledobjects-cases
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1000 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
-
-execute-k6-scaledobjects-cases: # disabled temporally to reduce execution times + grafana VUs
-	# Increasing ScaledObject count (10, 100, 1000 metrics in total)
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=10 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1000 TARGET_METRICS=1 ./k6 run --out cloud tests/test-scaledobject.js
-
-	# Increasing metrics per ScaledObject (10, 100, 1000 metrics in total)
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=1 TARGET_METRICS=10 ./k6 run --out cloud tests/test-scaledobject.js
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=10 TARGET_METRICS=10 ./k6 run --out cloud tests/test-scaledobject.js
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=10 TARGET_METRICS=100 ./k6 run --out cloud tests/test-scaledobject.js
-
-	# Switching between ScaledObject count and metrics per ScaledObject (1000 metrics in total)
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=20 TARGET_METRICS=50 ./k6 run --out cloud tests/test-scaledobject.js
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=100 TARGET_METRICS=10 ./k6 run --out cloud tests/test-scaledobject.js
-	@$(K6_ENVS) TARGET_SCALABLEDOBJECTS=500 TARGET_METRICS=2 ./k6 run --out cloud tests/test-scaledobject.js
+	helm uninstall k6-test -n $(K6_OPERATOR_NAMESPACE)

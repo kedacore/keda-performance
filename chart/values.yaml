@@ -1,0 +1,9 @@
+test:
+  parallelism: 1
+  file: ""
+  config: ""
+  extraConfig: {}
+  extraArgs: ""
+repo:
+  url: ""
+  branch: main
