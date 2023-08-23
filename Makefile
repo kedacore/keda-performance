@@ -18,7 +18,7 @@ GRAFANA_PROMETHEUS_URL_QUERY ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom
 PROMETHEUS_NAMESPACE ?= prometheus-performance
 K6_OPERATOR_NAMESPACE = k6-operator-system
 REPO_URL ?= https://github.com/kedacore/keda-performance.git
-REPO_BRANCH ?= use-operator
+REPO_BRANCH ?= main
 TEST_CONFIG ?= config.json
 
 ##################################################

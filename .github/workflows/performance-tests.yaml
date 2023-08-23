@@ -26,6 +26,9 @@ jobs:
 
       - name: Execute performance tests
         run: make execute-k6
+        # TODO: We need to edit this before accepting PRs because this will fail with forks
+        env:
+          REPO_BRANCH: ${{ github.head_ref || github.ref_name }}
 
       - name: Cleanup dependencies
         run: make undeploy
