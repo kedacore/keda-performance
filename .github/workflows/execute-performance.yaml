@@ -21,7 +21,7 @@ jobs:
 
       - name: Override KEDA version
         if: ${{ inputs.version }} 
-        uses: trevorlloydelliott/set-environment-variables@latest
+        uses: trevorlloydelliott/set-environment-variables@v1.0.0
         with:
           VERSION: ${{ inputs.version }}
 
