@@ -1,14 +1,29 @@
-name: Execute performance tests on PR
+name: Execute performance tests
 on:
-  pull_request: {}
+  schedule:
+    - cron:  '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'KEDA version to be used (it must be a valid tag)'
+        required: true
+        type: string
 
 jobs:
   execute:
     name: Execute performance tests
     runs-on: ubuntu-latest
     concurrency: performance-tests
+    environment:
+      VERSION: main
     steps:
       - uses: actions/checkout@v3
+
+      - name: Override KEDA version
+        if: ${{ inputs.version }} 
+        uses: trevorlloydelliott/set-environment-variables@latest
+        with:
+          VERSION: ${{ inputs.version }}
 
       - uses: oNaiPs/secrets-to-env-action@v1
         with:
@@ -22,9 +37,6 @@ jobs:
 
       - name: Execute performance tests
         run: make execute-k6
-        # TODO: We need to edit this before accepting PRs because this will fail with forks
-        env:
-          REPO_BRANCH: ${{ github.head_ref || github.ref_name }}
 
       - name: Cleanup dependencies
         run: make undeploy
