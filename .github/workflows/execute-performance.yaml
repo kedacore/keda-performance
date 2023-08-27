@@ -4,7 +4,7 @@ on:
     - cron:  '0 6 * * 1'
   workflow_dispatch:
     inputs:
-      version:
+      keda_version:
         description: 'KEDA version to be used (it must be a valid tag)'
         required: true
         type: string
@@ -15,15 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: performance-tests
     env:
-      VERSION: main
+      KEDA_VERSION: main
     steps:
       - uses: actions/checkout@v3
 
       - name: Override KEDA version
-        if: ${{ inputs.version }} 
+        if: ${{ inputs.keda_version }} 
         uses: trevorlloydelliott/set-environment-variables@v1.0.0
         with:
-          VERSION: ${{ inputs.version }}
+          KEDA_VERSION: ${{ inputs.keda_version }}
 
       - uses: oNaiPs/secrets-to-env-action@v1
         with:
