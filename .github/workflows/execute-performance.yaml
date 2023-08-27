@@ -14,7 +14,7 @@ jobs:
     name: Execute performance tests
     runs-on: ubuntu-latest
     concurrency: performance-tests
-    environment:
+    env:
       VERSION: main
     steps:
       - uses: actions/checkout@v3
