@@ -59,6 +59,7 @@ deploy-prometheus:
 					--set server.remoteWrite[0].url=$(GRAFANA_PROMETHEUS_URL_PUSH) \
 					--set server.remoteWrite[0].basic_auth.username=$(TF_GRAFANA_PROMETHEUS_USER) \
 					--set server.remoteWrite[0].basic_auth.password=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
+					--set server.remoteWrite[0].write_relabel_configs[0].replacement=$(KEDA_VERSION) \
 					-f deps/prometheus/values.yaml \
 					--namespace $(PROMETHEUS_NAMESPACE) \
 					--create-namespace \
