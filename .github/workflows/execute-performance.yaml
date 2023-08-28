@@ -37,6 +37,8 @@ jobs:
 
       - name: Execute performance tests
         run: make execute-k6
+        env:
+          REPO_BRANCH: ${{ github.ref_name }}
 
       - name: Cleanup dependencies
         run: make undeploy
