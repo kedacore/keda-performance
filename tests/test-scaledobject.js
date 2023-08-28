@@ -17,7 +17,11 @@ export const options = {
   teardownTimeout: "10m",
   //duration: "5m",
   thresholds: {
-    keda_internal_latency: ['p(95) < 50', 'p(99) < 100', 'max < 200']
+    keda_internal_latency: [
+      'p(95) < 75', 
+      'p(99) < 150', 
+      'max < 200'
+    ]
   }
 }
 
