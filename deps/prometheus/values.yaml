@@ -59,7 +59,7 @@ server:
       replacement: main
     # KEDA metrics used during tests and Container usage metrics
     - source_labels: [__name__]
-      regex: "keda_internal_scale_loop_latency|keda_resource_totals|keda_build_info|^container_.*"
+      regex: "keda_internal_scale_loop_latency|keda_resource_totals|keda_build_info|keda_scaler_metrics_latency|^container_.*"
       action: keep
 
 alertmanager:
