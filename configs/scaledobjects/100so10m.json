@@ -1,4 +1,13 @@
 {
+  "scenarios": {
+    "load": {
+      "tags": { "scenario": "default" },
+      "executor": "constant-vus",
+      "vus": 1,
+      "exec": "default",
+      "duration": "7m"
+    }
+  },
   "ext": {
     "loadimpact": {
       "projectID": 3645343,
