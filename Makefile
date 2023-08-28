@@ -11,6 +11,8 @@ TF_GRAFANA_PROMETHEUS_USER ?= user
 TF_GRAFANA_PROMETHEUS_PASSWORD ?= password
 TF_GRAFANA_TOKEN ?= token
 
+INJECT_FAULTS ?= -1
+
 KEDA_VERSION ?= main
 
 GRAFANA_PROMETHEUS_URL_PUSH ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom/push
@@ -109,6 +111,7 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.PROMETHEUS_URL=$(GRAFANA_PROMETHEUS_URL_QUERY) \
 		--set test.extraConfig.PROMETHEUS_USER=$(TF_GRAFANA_PROMETHEUS_USER) \
 		--set test.extraConfig.PROMETHEUS_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
+		--set test.extraConfig.INJECT_FAULTS=$(INJECT_FAULTS) \
 		--set test.extraArgs="--out cloud"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)

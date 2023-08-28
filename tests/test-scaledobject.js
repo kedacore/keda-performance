@@ -7,14 +7,15 @@ import * as workload from "../shared/scaledobject-workload.js";
 import { sleep } from "k6";
 import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
 import exec from 'k6/execution';
+import { ServiceDisruptor } from 'k6/x/disruptor';
 
 const GaugeKEDAInternalLatency = utils.generateGauge("keda_internal_latency");
 
 export const options = {
-  vus: 1,
+  //vus: 1,
   setupTimeout: "10m",
   teardownTimeout: "10m",
-  duration: "5m",
+  //duration: "5m",
   thresholds: {
     keda_internal_latency: ["value<100"]
   }
@@ -62,6 +63,22 @@ export default function () {
   sleep(5);
   GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
+
+export function disrupt(data) {
+  if (__ENV.INJECT_FAULTS != "1") {
+    return;
+  }
+
+  console.log('disrupt working');
+  const fault = {
+    averageDelay: "3s",
+  };
+
+  mock.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
+  const svcDisruptor = new ServiceDisruptor("mock-service", mock.getNamespaceName());
+  svcDisruptor.injectHTTPFaults(fault,"60s",{ ProxyPort: 8000 });
+}
+
 
 export function teardown() {
   const casePrefix = utils.generatePrefix(exec.test.options.ext.loadimpact.name);
