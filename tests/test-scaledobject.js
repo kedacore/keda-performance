@@ -9,7 +9,7 @@ import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
 import exec from 'k6/execution';
 import { ServiceDisruptor } from 'k6/x/disruptor';
 
-const GaugeKEDAInternalLatency = utils.generateGauge("keda_internal_latency");
+const TrendKEDAInternalLatency = utils.generateTrend("keda_internal_latency", true);
 
 export const options = {
   //vus: 1,
@@ -17,7 +17,7 @@ export const options = {
   teardownTimeout: "10m",
   //duration: "5m",
   thresholds: {
-    keda_internal_latency: ["value<100"]
+    keda_internal_latency: ['p(99) < 50', 'p(95) < 100', 'max < 500']
   }
 }
 
@@ -61,7 +61,7 @@ export function setup() {
 export default function () {
   workload.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
   sleep(5);
-  GaugeKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
+  TrendKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
 
 export function disrupt(data) {
@@ -76,7 +76,7 @@ export function disrupt(data) {
 
   mock.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
   const svcDisruptor = new ServiceDisruptor("mock-service", mock.getNamespaceName());
-  svcDisruptor.injectHTTPFaults(fault,"60s",{ ProxyPort: 8000 });
+  svcDisruptor.injectHTTPFaults(fault, "60s", { ProxyPort: 8000 });
 }
 
 
