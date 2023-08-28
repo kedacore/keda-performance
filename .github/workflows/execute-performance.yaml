@@ -1,12 +1,12 @@
 name: Execute performance tests
 on:
   schedule:
-    - cron:  '0 6 * * 1'
+    - cron: "0 6 * * 1"
   workflow_dispatch:
     inputs:
       keda_version:
-        description: 'KEDA version to be used (it must be a valid tag)'
-        required: true
+        description: "KEDA version to be used (it must be a valid tag)"
+        required: false
         type: string
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Override KEDA version
-        if: ${{ inputs.keda_version }} 
+        if: ${{ inputs.keda_version }}
         uses: trevorlloydelliott/set-environment-variables@v1.0.0
         with:
           KEDA_VERSION: ${{ inputs.keda_version }}

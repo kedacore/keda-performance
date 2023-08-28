@@ -76,7 +76,7 @@ export function disrupt(data) {
 
   mock.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
   const svcDisruptor = new ServiceDisruptor("mock-service", mock.getNamespaceName());
-  svcDisruptor.injectHTTPFaults(fault, "60s", { ProxyPort: 8000 });
+  svcDisruptor.injectHTTPFaults(fault, "120s", { ProxyPort: 8000 });
 }
 
 
