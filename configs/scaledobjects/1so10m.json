@@ -6,14 +6,6 @@
       "vus": 1,
       "exec": "default",
       "duration": "5m"
-    },
-    "disrupt": {
-      "tags": { "scenario": "chaos" },
-      "executor": "shared-iterations",
-      "iterations": 1,
-      "vus": 1,
-      "exec": "disrupt",
-      "startTime": "0s"
     }
   },
   "ext": {

@@ -1,0 +1,29 @@
+{
+  "scenarios": {
+    "load": {
+      "tags": { "scenario": "default" },
+      "executor": "constant-vus",
+      "vus": 1,
+      "exec": "default",
+      "duration": "5m"
+    },
+    "disrupt": {
+      "tags": { "scenario": "chaos" },
+      "executor": "shared-iterations",
+      "iterations": 1,
+      "vus": 1,
+      "exec": "disrupt",
+      "startTime": "30s"
+    }
+  },
+  "ext": {
+    "loadimpact": {
+      "projectID": 3645343,
+      "name": "1000-ScaleObjects-1-Metrics"
+    },
+    "keda": {
+      "scaledobjects": 1000,
+      "metricsPerScaledobject": 1
+    }
+  }
+}

@@ -71,7 +71,7 @@ export function disrupt(data) {
 
   console.log('disrupt working');
   const fault = {
-    averageDelay: "3s",
+    averageDelay: "500ms",
   };
 
   mock.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
