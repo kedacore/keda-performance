@@ -17,9 +17,7 @@ export const options = {
   teardownTimeout: "10m",  
 }
 
-export function setup() {
-  console.log(`Executing test case: ${testCaseName} - ${casePrefix}`);
-  console.log(`Starting setup`);
+export function setup() {  
   const testCaseName = exec.test.options.ext.loadimpact.name;
   const scaledObjectCount = exec.test.options.ext.keda.scaledobjects;
   const metricsPerScaledObject = exec.test.options.ext.keda.metricsPerScaledobject;
@@ -27,7 +25,8 @@ export function setup() {
   mock.setExecutionPrefix(casePrefix);
   workload.setExecutionPrefix(casePrefix);
 
-  
+  console.log(`Executing test case: ${testCaseName} - ${casePrefix}`);
+  console.log(`Starting setup`);  
 
   // Deploy the mock
   kubernetes.applyManifest(mock.getMockNamespaceManifest());
