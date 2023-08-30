@@ -117,3 +117,16 @@ execute-k6-scaled-object-case:
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
 	helm uninstall k6-test -n $(K6_OPERATOR_NAMESPACE)
+
+##################################################
+# Linter                                         #
+##################################################
+
+install-prettier:
+	npm install --save-dev --save-exact prettier
+
+lint: install-prettier
+	npx prettier . --write
+
+verify-lint: install-prettier
+	npx prettier . --check
