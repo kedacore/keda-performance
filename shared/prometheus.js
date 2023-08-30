@@ -5,7 +5,7 @@ export function getResourcesCount(namespace, type) {
     var client = prometheus.newPrometheusClient(
       __ENV.PROMETHEUS_URL,
       __ENV.PROMETHEUS_USER,
-      __ENV.PROMETHEUS_PASSWORD
+      __ENV.PROMETHEUS_PASSWORD,
     );
     var end = new Date();
     var start = new Date(end.getTime() - 30 * 1000);
@@ -15,7 +15,7 @@ export function getResourcesCount(namespace, type) {
       `keda_resource_totals{namespace="${namespace}",type="${type}"}`,
       start.toISOString(),
       end.toISOString(),
-      period
+      period,
     );
     var lastItem = response[response.length - 1];
     if (lastItem == undefined) {
@@ -35,7 +35,7 @@ export function getLag(namespace) {
     var client = prometheus.newPrometheusClient(
       __ENV.PROMETHEUS_URL,
       __ENV.PROMETHEUS_USER,
-      __ENV.PROMETHEUS_PASSWORD
+      __ENV.PROMETHEUS_PASSWORD,
     );
     var end = new Date();
     var start = new Date(end.getTime() - 30 * 1000);
@@ -45,7 +45,7 @@ export function getLag(namespace) {
       `max(keda_internal_scale_loop_latency{namespace="${namespace}"})`,
       start.toISOString(),
       end.toISOString(),
-      period
+      period,
     );
     var lastItem = response[response.length - 1];
     var jsonBytes = lastItem.marshalJSON();

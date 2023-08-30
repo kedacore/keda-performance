@@ -12,7 +12,7 @@ Keda organization chose k6 as it is a golang based tool even though the scriptin
 
 Keda organization chose k6 as well to simulate traffic as part of chaos experiments, trigger them from your k6 tests or inject different types of faults in Kubernetes with [xk6-disruptor](https://k6.io/docs/javascript-api/xk6-disruptor/).
 
-Another reason to choose K6 is the integration with grafana that allows us to have observability during the tests. 
+Another reason to choose K6 is the integration with grafana that allows us to have observability during the tests.
 
 ## Prerequisites
 
@@ -35,9 +35,7 @@ Another reason to choose K6 is the integration with grafana that allows us to ha
 **shared**/ contains functions needed within the loadtest
 **deps**/ dependencies outside the test such as prometheus configuration
 
-
 ### All tests
-
 
 > **Note**
 > todo
@@ -45,7 +43,7 @@ Another reason to choose K6 is the integration with grafana that allows us to ha
 ### Specific test
 
 ```bash
-ghcr.io/kedacore/keda-k6-runner run 
+ghcr.io/kedacore/keda-k6-runner run
 k6 run --config configs/scaledobjects/1scaledobject100metrics.json tests/test-scaledobject.js  # Assumes that setup has been run before
 ```
 
