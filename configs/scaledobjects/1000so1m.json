@@ -25,5 +25,12 @@
       "scaledobjects": 1000,
       "metricsPerScaledobject": 1
     }
+  },
+  "thresholds": {
+    "keda_internal_latency": [
+      "p(95) < 75", 
+      "p(99) < 150", 
+      "max < 200"
+    ]
   }
 }
