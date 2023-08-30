@@ -1,20 +1,11 @@
 {
-    "scenarios": {
-      "load": {
-        "tags": { "scenario": "default" },
-        "executor": "constant-vus",
-        "vus": 1,
-        "exec": "default",
-        "duration": "5m"
-      },
-      "disrupt": {
-        "tags": { "scenario": "chaos" },
-        "executor": "shared-iterations",
-        "iterations": 1,
-        "vus": 1,
-        "exec": "disrupt",
-        "startTime": "1m"
-      }
+  "scenarios": {
+    "load": {
+      "tags": { "scenario": "default" },
+      "executor": "constant-vus",
+      "vus": 1,
+      "exec": "default",
+      "duration": "5m"
     },
     "disrupt": {
       "tags": { "scenario": "chaos" },
@@ -36,10 +27,6 @@
     }
   },
   "thresholds": {
-    "keda_internal_latency": [
-      "p(95) < 7", 
-      "p(99) < 15", 
-      "max < 20"
-    ]
+    "keda_internal_latency": ["p(95) < 7", "p(99) < 15", "max < 20"]
   }
 }

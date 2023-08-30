@@ -49,11 +49,11 @@ export function getLags(namespace) {
     );
 
     var lags = [];
-    response.forEach(serie => {
+    response.forEach((serie) => {
       var jsonBytes = serie.marshalJSON();
       var { metric, values } = JSON.parse(String.fromCharCode(...jsonBytes));
       var lastValue = values[values.length - 1];
-      lags.push({resource: metric["resource"] , value: lastValue[1]})
+      lags.push({ resource: metric["resource"], value: lastValue[1] });
     });
     return lags;
   }

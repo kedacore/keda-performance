@@ -6,27 +6,31 @@ import * as workload from "../shared/scaledobject-workload.js";
 
 import { sleep } from "k6";
 import { describe } from "https://jslib.k6.io/k6chaijs/4.3.4.3/index.js";
-import exec from 'k6/execution';
-import { ServiceDisruptor } from 'k6/x/disruptor';
+import exec from "k6/execution";
+import { ServiceDisruptor } from "k6/x/disruptor";
 
-const TrendKEDAInternalLatency = utils.generateTrend("keda_internal_latency", true);
+const TrendKEDAInternalLatency = utils.generateTrend(
+  "keda_internal_latency",
+  true,
+);
 
 export const options = {
   //vus: 1,
   setupTimeout: "15m",
-  teardownTimeout: "10m",  
-}
+  teardownTimeout: "10m",
+};
 
-export function setup() {  
+export function setup() {
   const testCaseName = exec.test.options.ext.loadimpact.name;
   const scaledObjectCount = exec.test.options.ext.keda.scaledobjects;
-  const metricsPerScaledObject = exec.test.options.ext.keda.metricsPerScaledobject;
+  const metricsPerScaledObject =
+    exec.test.options.ext.keda.metricsPerScaledobject;
   const casePrefix = utils.generatePrefix(testCaseName);
   mock.setExecutionPrefix(casePrefix);
   workload.setExecutionPrefix(casePrefix);
 
   console.log(`Executing test case: ${testCaseName} - ${casePrefix}`);
-  console.log(`Starting setup`);  
+  console.log(`Starting setup`);
 
   // Deploy the mock
   kubernetes.applyManifest(mock.getMockNamespaceManifest());
@@ -38,7 +42,7 @@ export function setup() {
   for (let i = 0; i < scaledObjectCount; i++) {
     kubernetes.applyManifest(workload.getWorkloadDeploymentManifest(i));
     kubernetes.applyManifest(
-      workload.getWorkloadScaledObjectManifest(i, metricsPerScaledObject)
+      workload.getWorkloadScaledObjectManifest(i, metricsPerScaledObject),
     );
   }
 
@@ -48,7 +52,7 @@ export function setup() {
     "scaled_object",
     scaledObjectCount,
     20,
-    15
+    15,
   );
 
   // Wait a minute to stabilizate prometheus metrics before the test
@@ -57,9 +61,11 @@ export function setup() {
 }
 
 export default function () {
-  workload.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));  
+  workload.setExecutionPrefix(
+    utils.generatePrefix(exec.test.options.ext.loadimpact.name),
+  );
   var lags = prometheus.getLags(workload.getNamespaceName());
-  lags.forEach(lag => {  
+  lags.forEach((lag) => {
     TrendKEDAInternalLatency.add(lag.value, { resource: lag.resource });
   });
   sleep(5);
@@ -70,20 +76,26 @@ export function disrupt(data) {
     return;
   }
 
-  console.log('disrupt working');
+  console.log("disrupt working");
   const fault = {
     averageDelay: "500ms",
   };
 
-  mock.setExecutionPrefix(utils.generatePrefix(exec.test.options.ext.loadimpact.name));
-  const svcDisruptor = new ServiceDisruptor("mock-service", mock.getNamespaceName());
+  mock.setExecutionPrefix(
+    utils.generatePrefix(exec.test.options.ext.loadimpact.name),
+  );
+  const svcDisruptor = new ServiceDisruptor(
+    "mock-service",
+    mock.getNamespaceName(),
+  );
   svcDisruptor.injectHTTPFaults(fault, "120s", { ProxyPort: 8000 });
 }
 
-
 export function teardown() {
   console.log(`Starting teardown`);
-  const casePrefix = utils.generatePrefix(exec.test.options.ext.loadimpact.name);
+  const casePrefix = utils.generatePrefix(
+    exec.test.options.ext.loadimpact.name,
+  );
   mock.setExecutionPrefix(casePrefix);
   workload.setExecutionPrefix(casePrefix);
   describe("Cleanup resources", () => {
@@ -95,7 +107,7 @@ export function teardown() {
       "scaled_object",
       0,
       20,
-      15
+      15,
     );
   });
 }
