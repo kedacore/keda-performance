@@ -5,7 +5,7 @@
       "executor": "constant-vus",
       "vus": 1,
       "exec": "default",
-      "duration": "7m"
+      "duration": "5m"
     },
     "disrupt": {
       "tags": { "scenario": "chaos" },

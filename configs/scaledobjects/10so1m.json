@@ -1,11 +1,20 @@
 {
-  "scenarios": {
-    "load": {
-      "tags": { "scenario": "default" },
-      "executor": "constant-vus",
-      "vus": 1,
-      "exec": "default",
-      "duration": "7m"
+    "scenarios": {
+      "load": {
+        "tags": { "scenario": "default" },
+        "executor": "constant-vus",
+        "vus": 1,
+        "exec": "default",
+        "duration": "5m"
+      },
+      "disrupt": {
+        "tags": { "scenario": "chaos" },
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "vus": 1,
+        "exec": "disrupt",
+        "startTime": "1m"
+      }
     },
     "disrupt": {
       "tags": { "scenario": "chaos" },
