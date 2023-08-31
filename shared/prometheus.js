@@ -30,7 +30,7 @@ export function getResourcesCount(namespace, type) {
   return scaledObjectCount;
 }
 
-export function getLag(namespace) {
+export function getLags(namespace) {
   if (__ENV.PROMETHEUS_URL != "") {
     var client = prometheus.newPrometheusClient(
       __ENV.PROMETHEUS_URL,
@@ -42,15 +42,19 @@ export function getLag(namespace) {
     var period = "minute";
 
     var response = client.queryRange(
-      `max(keda_internal_scale_loop_latency{namespace="${namespace}"})`,
+      `keda_internal_scale_loop_latency{namespace="${namespace}"}`,
       start.toISOString(),
       end.toISOString(),
       period,
     );
-    var lastItem = response[response.length - 1];
-    var jsonBytes = lastItem.marshalJSON();
-    var { _, values } = JSON.parse(String.fromCharCode(...jsonBytes));
-    var lastValue = values[values.length - 1];
-    return lastValue[1];
+
+    var lags = [];
+    response.forEach((serie) => {
+      var jsonBytes = serie.marshalJSON();
+      var { metric, values } = JSON.parse(String.fromCharCode(...jsonBytes));
+      var lastValue = values[values.length - 1];
+      lags.push({ resource: metric["resource"], value: lastValue[1] });
+    });
+    return lags;
   }
 }

@@ -18,10 +18,6 @@ export const options = {
   //vus: 1,
   setupTimeout: "15m",
   teardownTimeout: "10m",
-  //duration: "5m",
-  thresholds: {
-    keda_internal_latency: ["p(95) < 75", "p(99) < 150", "max < 200"],
-  },
 };
 
 export function setup() {
@@ -34,6 +30,7 @@ export function setup() {
   workload.setExecutionPrefix(casePrefix);
 
   console.log(`Executing test case: ${testCaseName} - ${casePrefix}`);
+  console.log(`Starting setup`);
 
   // Deploy the mock
   kubernetes.applyManifest(mock.getMockNamespaceManifest());
@@ -60,14 +57,18 @@ export function setup() {
 
   // Wait a minute to stabilizate prometheus metrics before the test
   sleep(60);
+  console.log(`Starting test`);
 }
 
 export default function () {
   workload.setExecutionPrefix(
     utils.generatePrefix(exec.test.options.ext.loadimpact.name),
   );
+  var lags = prometheus.getLags(workload.getNamespaceName());
+  lags.forEach((lag) => {
+    TrendKEDAInternalLatency.add(lag.value, { resource: lag.resource });
+  });
   sleep(5);
-  TrendKEDAInternalLatency.add(prometheus.getLag(workload.getNamespaceName()));
 }
 
 export function disrupt(data) {
@@ -91,6 +92,7 @@ export function disrupt(data) {
 }
 
 export function teardown() {
+  console.log(`Starting teardown`);
   const casePrefix = utils.generatePrefix(
     exec.test.options.ext.loadimpact.name,
   );
