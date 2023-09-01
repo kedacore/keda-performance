@@ -29,6 +29,8 @@ Another reason to choose K6 is the integration with grafana that allows us to ha
 
 ## Running tests
 
+docker run -v ${PWD}:/repo ghcr.io/kedacore/keda-k6-runner run /repo/tests/test-scaledobject.js
+
 ### Repository Organization
 
 **configs**/ contains the configurations to execute K6
