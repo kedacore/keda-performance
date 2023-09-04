@@ -43,8 +43,7 @@ Another reason to choose K6 is the integration with grafana that allows us to ha
      ENV.PROMETHEUS_USER
      ENV.PROMETHEUS_PASSWORD
 
-> **Note**
-> todo
+=======
 
 ### Running Locally Specific test
 

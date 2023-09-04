@@ -9,7 +9,7 @@ export function waitForResourceCount(
   type,
   expected,
   maxTries,
-  interval
+  interval,
 ) {
   let currentScaledObjectCount = 0;
   let tries = 0;
@@ -20,8 +20,9 @@ export function waitForResourceCount(
   } while (currentScaledObjectCount != expected && tries < maxTries);
   if (currentScaledObjectCount != expected) {
     throw Error(
-      `expected resource count not reached afer ${tries * interval
-      } seconds. Expected ${expected}, got ${currentScaledObjectCount}`
+      `expected resource count not reached afer ${
+        tries * interval
+      } seconds. Expected ${expected}, got ${currentScaledObjectCount}`,
     );
   }
 }
