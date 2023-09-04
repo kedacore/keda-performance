@@ -47,7 +47,7 @@ Another reason to choose K6 is the integration with grafana that allows us to ha
 
 ### Running Locally Specific test
 
-In order to execute the tests we need to build the binary. To do so, check [DockerFile](https://github.com/kedacore/test-tools/blob/main/k6-runner/Dockerfile)  where the extensions needed are specified.  
+In order to execute the tests we need to build the binary. To do so, check [DockerFile](https://github.com/kedacore/test-tools/blob/main/k6-runner/Dockerfile)  where the extensions needed are specified.
 
 e.g.
 
