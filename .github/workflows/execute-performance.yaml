@@ -1,7 +1,7 @@
 name: Execute performance tests
 on:
   schedule:
-    - cron: "0 6 * * 1"
+    - cron: "0 1 * * 1"
   workflow_dispatch:
     inputs:
       keda_version:
