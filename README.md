@@ -47,7 +47,7 @@ Another reason to choose K6 is the integration with grafana that allows us to ha
 
 ### Running Locally Specific test
 
-In order to execute the tests we need to build the binary. To do so, check [DockerFile](https://github.com/kedacore/test-tools/blob/main/k6-runner/Dockerfile)  where the extensions needed are specified.
+In order to execute the tests we need to build the binary. To do so, check [DockerFile](https://github.com/kedacore/test-tools/blob/main/k6-runner/Dockerfile) where the extensions needed are specified.
 
 e.g.
 
@@ -59,23 +59,22 @@ e.g.
     --with github.com/grafana/xk6-disruptor
 ```
 
-If you want to execute a test you will need to modify the config  file to match the test that suits your case. 
+If you want to execute a test you will need to modify the config file to match the test that suits your case.
 
 The parameters to change are inside the config json file in the following section:
 
 "keda": {
-  "scaledobjects": 1,
-  "metricsPerScaledobject": 10
-    }
+"scaledobjects": 1,
+"metricsPerScaledobject": 10
+}
 
 ```bash
-./k6 run tests/test-scaledobject.js --env INJECT_FAULTS=1  --config configs/scaledobjects/1so10m.json  
+./k6 run tests/test-scaledobject.js --env INJECT_FAULTS=1  --config configs/scaledobjects/1so10m.json
 ```
 
 ### Running workflow Specific test
 
 You can run tests from the workflows enable in github in the following [url](https://github.com/kedacore/keda-performance/actions/workflows/execute-performance.yaml).
-
 
 ## Adding tests
 
