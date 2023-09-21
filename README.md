@@ -69,7 +69,6 @@ The parameters to change are inside the config json file in the following sectio
 }
 
 ```bash
-
 ./k6 run tests/test-scaledobject.js --env INJECT_FAULTS=1  --config configs/scaledobjects/1so10m.json
 ```
 
@@ -88,7 +87,7 @@ Add a new scenario following [k6 documentation](https://k6.io/docs/using-k6/scen
 ```json
 "keda": {
 "scaledobjects": int,
-"metricsPerScaledobject": int 
+"metricsPerScaledobject": int
 }
 ```
 
@@ -174,4 +173,3 @@ For Tests including disrupt we have to notice that the threshold should consider
 ## Load Test infrastructure
 
 > TODO
- 
