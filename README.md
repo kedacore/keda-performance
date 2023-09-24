@@ -52,11 +52,11 @@ In order to execute the tests we need to build the binary. To do so, check [Dock
 e.g.
 
 ```bash
-  docker run --rm -it -u "$(id -u):$(id -g)" -v "${PWD}:/xk6" grafana/xk6 build v0.43.1 \
-    --output k6 \
-    --with  github.com/JorTurFer/xk6-input-prometheus \
-    --with github.com/grafana/xk6-kubernetes \
-    --with github.com/grafana/xk6-disruptor
+docker run --rm -it -u "$(id -u):$(id -g)" -v "${PWD}:/xk6" grafana/xk6 build v0.43.1 \
+  --output k6 \
+  --with  github.com/JorTurFer/xk6-input-prometheus \
+  --with github.com/grafana/xk6-kubernetes \
+  --with github.com/grafana/xk6-disruptor
 ```
 
 If you want to execute a test you will need to modify the config file to match the test that suits your case.
@@ -76,14 +76,100 @@ The parameters to change are inside the config json file in the following sectio
 
 You can run tests from the workflows enable in github in the following [url](https://github.com/kedacore/keda-performance/actions/workflows/execute-performance.yaml).
 
-## Adding tests
+## Adding Scenarios
+
+Adding different scenarios as needed is enabled via PR.
 
 #### ⚠⚠ Important: ⚠⚠
 
-> - todo
+Add a new scenario following [k6 documentation](https://k6.io/docs/using-k6/scenarios/advanced-examples/) in json format
 
-#### **Example Test:**
+```json
+"keda": {
+"scaledobjects": int,
+"metricsPerScaledobject": int
+}
+```
+
+Where **scaledobjects** is the number of objects to scale
+and **metricsPerScaledobject** is the number of metrics that will be considered in order to scale.
+
+#### **Example Scenario:**
+
+Scenario without Fault Injects:
+
+```json
+{
+  "scenarios": {
+    "load": {
+      "tags": { "scenario": "default" },
+      "executor": "constant-vus",
+      "vus": 1,
+      "exec": "default",
+      "duration": "5m"
+    }
+  },
+  "ext": {
+    "loadimpact": {
+      "projectID": xxxxxxx,
+      "name": "x-ScaleObjects-y-Metrics"
+    },
+    "keda": {
+      "scaledobjects": x,
+      "metricsPerScaledobject": y
+    }
+  },
+  "thresholds": {
+    "keda_internal_latency": ["p(95) < 7", "p(99) < 15", "max < 20"]
+  }
+}
+```
+
+Scenario with Fault Injects:
+
+```json
+{
+  "scenarios": {
+    "load": {
+      "tags": { "scenario": "default" },
+      "executor": "constant-vus",
+      "vus": 1,
+      "exec": "default",
+      "duration": "9m"
+    },
+    "disrupt": {
+      "tags": { "scenario": "chaos" },
+      "executor": "shared-iterations",
+      "iterations": 1,
+      "vus": 1,
+      "exec": "disrupt",
+      "startTime": "1m"
+    }
+  },
+  "ext": {
+    "loadimpact": {
+      "projectID": xxxxxxx,
+      "name": "x-ScaleObjects-y-Metrics"
+    },
+    "keda": {
+      "scaledobjects": x,
+      "metricsPerScaledobject": y
+    }
+  },
+  "thresholds": {
+    "keda_internal_latency": ["p(90)<1", "p(95) < 7", "p(99) < 15", "max < 20"]
+  }
+}
+```
 
 #### Notes
 
+For Tests including disrupt we have to notice that the threshold should consider the disrupt phase as a percentage of the total execution time of the test. E.g.
+
+> total execution time: 10m \
+> total disruption time: 1m \
+> then the percentile that should be considered without any disruption would be p90 ( 1 min out of 10 min)
+
 ## Load Test infrastructure
+
+> TODO
