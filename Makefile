@@ -40,9 +40,9 @@ get-cluster-context: az-login ## Get Azure cluster context.
 # Deployments                                    #
 ##################################################
 
-deploy: deploy-keda deploy-k6-operator deploy-prometheus
+deploy: deploy-otel-collector deploy-keda deploy-k6-operator deploy-prometheus
 
-undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator undeploy-keda	
+undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator undeploy-keda undeploy-otel-collector
 
 deploy-keda:
 	mkdir -p deps
@@ -71,6 +71,17 @@ undeploy-prometheus:
 	helm uninstall prometheus -n $(PROMETHEUS_NAMESPACE)
 	kubectl delete ns $(PROMETHEUS_NAMESPACE)
 
+deploy-otel-collector:
+	helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+	helm repo update
+	@helm upgrade --install opentelemetry-collector \
+				open-telemetry/opentelemetry-collector \
+				-f deps/otel-collector/values.yaml \
+				--wait
+
+undeploy-otel-collector:
+	helm uninstall opentelemetry-collector 
+
 # we have to replace this with the helm chart when they release it
 # https://github.com/grafana/k6-operator/pull/98
 deploy-k6-operator:
@@ -97,8 +108,9 @@ execute-k6: execute-k6-scaledobjects
 execute-k6-scaledobjects:
 	@for file in $(shell find ./configs/scaledobjects -maxdepth 1 -not -type d); do \
 		make execute-k6-scaled-object-case TEST_CONFIG="$${file}" ; \
+		make print-logs-and-restart-keda ; \
 	done
-	
+
 execute-k6-scaled-object-case:
 	@helm install k6-test \
 		chart	\
@@ -117,6 +129,11 @@ execute-k6-scaled-object-case:
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
 	helm uninstall k6-test -n $(K6_OPERATOR_NAMESPACE)
+
+print-logs-and-restart-keda:
+	kubectl logs -n keda -l name=keda-operator --since=30m --tail=-1
+	kubectl rollout restart deployment keda-operator -n keda
+	kubectl rollout status deployment keda-operator -n keda
 
 ##################################################
 # Linter                                         #
