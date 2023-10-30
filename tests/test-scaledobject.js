@@ -37,6 +37,9 @@ export function setup() {
   kubernetes.applyManifest(mock.getMockDeploymentManifest(10));
   kubernetes.applyManifest(mock.getMockServiceManifest());
 
+  // Wait 1 minute to spin up the mock
+  sleep(60);
+
   // Deploy the load
   kubernetes.applyManifest(workload.getWorkloadNamespaceManifest());
   for (let i = 0; i < scaledObjectCount; i++) {
