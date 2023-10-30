@@ -11,7 +11,7 @@ import { ServiceDisruptor } from "k6/x/disruptor";
 
 const TrendKEDAInternalLatency = utils.generateTrend(
   "keda_internal_latency",
-  true,
+  true
 );
 
 export const options = {
@@ -42,7 +42,7 @@ export function setup() {
   for (let i = 0; i < scaledObjectCount; i++) {
     kubernetes.applyManifest(workload.getWorkloadDeploymentManifest(i));
     kubernetes.applyManifest(
-      workload.getWorkloadScaledObjectManifest(i, metricsPerScaledObject),
+      workload.getWorkloadScaledObjectManifest(i, metricsPerScaledObject)
     );
   }
 
@@ -52,7 +52,7 @@ export function setup() {
     "scaled_object",
     scaledObjectCount,
     20,
-    15,
+    15
   );
 
   // Wait a minute to stabilizate prometheus metrics before the test
@@ -62,7 +62,7 @@ export function setup() {
 
 export default function () {
   workload.setExecutionPrefix(
-    utils.generatePrefix(exec.test.options.ext.loadimpact.name),
+    utils.generatePrefix(exec.test.options.ext.loadimpact.name)
   );
   var lags = prometheus.getLags(workload.getNamespaceName());
   lags.forEach((lag) => {
@@ -72,7 +72,7 @@ export default function () {
 }
 
 export function disrupt(data) {
-  if (__ENV.INJECT_FAULTS != "0") {
+  if (__ENV.INJECT_FAULTS != "1") {
     return;
   }
 
@@ -82,11 +82,11 @@ export function disrupt(data) {
   };
 
   mock.setExecutionPrefix(
-    utils.generatePrefix(exec.test.options.ext.loadimpact.name),
+    utils.generatePrefix(exec.test.options.ext.loadimpact.name)
   );
   const svcDisruptor = new ServiceDisruptor(
     "mock-service",
-    mock.getNamespaceName(),
+    mock.getNamespaceName()
   );
   svcDisruptor.injectHTTPFaults(fault, "120s", { ProxyPort: 8000 });
 }
@@ -94,7 +94,7 @@ export function disrupt(data) {
 export function teardown() {
   console.log(`Starting teardown`);
   const casePrefix = utils.generatePrefix(
-    exec.test.options.ext.loadimpact.name,
+    exec.test.options.ext.loadimpact.name
   );
   mock.setExecutionPrefix(casePrefix);
   workload.setExecutionPrefix(casePrefix);
@@ -107,7 +107,7 @@ export function teardown() {
       "scaled_object",
       0,
       20,
-      15,
+      15
     );
   });
 }
