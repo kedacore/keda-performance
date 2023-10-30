@@ -32,6 +32,11 @@ jobs:
       - name: Get cluster context
         run: make get-cluster-context
 
+      - name: Scale cluster
+        run: make scale-node-pool
+        env:
+          NODE_POOL_SIZE: 3
+
       - name: Deploy dependencies
         run: make deploy
 
@@ -43,3 +48,9 @@ jobs:
       - name: Cleanup dependencies
         run: make undeploy
         if: ${{ always() }}
+
+      - name: Scale cluster
+        if: ${{ always() }}
+        run: make scale-node-pool
+        env:
+          NODE_POOL_SIZE: 1

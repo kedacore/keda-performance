@@ -23,6 +23,8 @@ REPO_URL ?= https://github.com/kedacore/keda-performance.git
 REPO_BRANCH ?= main
 TEST_CONFIG ?= config.json
 
+NODE_POOL_SIZE ?= 1
+
 ##################################################
 # Kubernetes context                             #
 ##################################################
@@ -35,6 +37,14 @@ get-cluster-context: az-login ## Get Azure cluster context.
 		--name $(TEST_CLUSTER_NAME) \
 		--subscription $(TF_AZURE_SUBSCRIPTION) \
 		--resource-group $(TF_AZURE_RESOURCE_GROUP)
+
+.PHONY: scale-node-pool
+scale-node-pool: az-login ## Scale nodepool.
+	@az aks scale \
+		--name $(TEST_CLUSTER_NAME) \
+		--subscription $(TF_AZURE_SUBSCRIPTION) \
+		--resource-group $(TF_AZURE_RESOURCE_GROUP) \
+		--node-count $(NODE_POOL_SIZE)
 
 ##################################################
 # Deployments                                    #
