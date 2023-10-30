@@ -72,7 +72,7 @@ export default function () {
 }
 
 export function disrupt(data) {
-  if (__ENV.INJECT_FAULTS != "0") {
+  if (__ENV.INJECT_FAULTS != "1") {
     return;
   }
 
