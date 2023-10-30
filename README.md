@@ -88,11 +88,7 @@ Add a new scenario following [k6 documentation](https://k6.io/docs/using-k6/scen
 ```json
 "keda": {
 "scaledobjects": int,
-<<<<<<< HEAD
-"metricsPerScaledobject": int 
-=======
 "metricsPerScaledobject": int
->>>>>>> af3e6c9fc559e8248bca5dc700d10cacb86cd5ed
 }
 ```
 
@@ -177,8 +173,4 @@ For Tests including disrupt we have to notice that the threshold should consider
 
 ## Load Test infrastructure
 
-<<<<<<< HEAD
 TODO
-=======
-> TODO
->>>>>>> af3e6c9fc559e8248bca5dc700d10cacb86cd5ed
