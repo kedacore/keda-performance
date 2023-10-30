@@ -32,6 +32,9 @@ spec:
       containers:
         - name: metrics
           image: ghcr.io/kedacore/tests-metrics-api
+          resources:
+            requests:
+              cpu: 200m
           ports:
             - containerPort: 8080
               protocol: TCP`;
