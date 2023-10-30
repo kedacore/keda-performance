@@ -1,0 +1,17 @@
+mode: deployment
+config:
+  exporters:
+    logging: {}
+  receivers:
+    jaeger: null
+    prometheus: null
+    zipkin: null
+  service:
+    pipelines:
+      traces: null
+      metrics:
+        receivers:
+          - otlp
+        exporters:
+          - logging
+      logs: null

@@ -40,9 +40,9 @@ get-cluster-context: az-login ## Get Azure cluster context.
 # Deployments                                    #
 ##################################################
 
-deploy: deploy-keda deploy-k6-operator deploy-prometheus
+deploy: deploy-otel-collector deploy-keda deploy-k6-operator deploy-prometheus
 
-undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator undeploy-keda	
+undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator undeploy-keda undeploy-otel-collector
 
 deploy-keda:
 	mkdir -p deps
@@ -70,6 +70,17 @@ deploy-prometheus:
 undeploy-prometheus:
 	helm uninstall prometheus -n $(PROMETHEUS_NAMESPACE)
 	kubectl delete ns $(PROMETHEUS_NAMESPACE)
+
+deploy-otel-collector:
+	helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+	helm repo update
+	@helm upgrade --install opentelemetry-collector \
+				open-telemetry/opentelemetry-collector \
+				-f deps/otel-collector/values.yaml \
+				--wait
+
+undeploy-otel-collector:
+	helm uninstall opentelemetry-collector 
 
 # we have to replace this with the helm chart when they release it
 # https://github.com/grafana/k6-operator/pull/98
