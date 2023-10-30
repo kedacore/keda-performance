@@ -55,8 +55,8 @@ export function setup() {
     15,
   );
 
-  // Wait a minute to stabilizate prometheus metrics before the test
-  sleep(60);
+  // Wait 3 minutes to stabilizate prometheus metrics before the test
+  sleep(180);
   console.log(`Starting test`);
 }
 
