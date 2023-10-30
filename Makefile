@@ -58,6 +58,13 @@ deploy-keda:
 	mkdir -p deps
 	git clone https://github.com/kedacore/keda deps/keda --depth 1
 	VERSION=$(KEDA_VERSION) make -C deps/keda deploy
+	# update resources to 2CPU & 2Gi
+	kubectl patch deploy keda-operator -n keda --type json -p="[ \
+		{'op': 'replace', 'path': '/spec/template/spec/containers/0/resources/requests/memory', 'value':'2Gi'}, \
+		{'op': 'replace', 'path': '/spec/template/spec/containers/0/resources/limits/memory', 'value':'2Gi'}, \
+		{'op': 'replace', 'path': '/spec/template/spec/containers/0/resources/requests/cpu', 'value':'1'}, \
+		{'op': 'replace', 'path': '/spec/template/spec/containers/0/resources/limits/cpu', 'value':'1'}, \
+		]"
 
 undeploy-keda:
 	VERSION=$(KEDA_VERSION) make -C deps/keda undeploy
