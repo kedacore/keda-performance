@@ -100,8 +100,6 @@ export function teardown() {
   workload.setExecutionPrefix(casePrefix);
   describe("Cleanup resources", () => {
     kubernetes.deleteNamespace(workload.getNamespaceName());
-    kubernetes.deleteNamespace(mock.getNamespaceName());
-
     utils.waitForResourceCount(
       workload.getNamespaceName(),
       "scaled_object",
@@ -109,5 +107,7 @@ export function teardown() {
       20,
       15,
     );
+
+    kubernetes.deleteNamespace(mock.getNamespaceName());
   });
 }
