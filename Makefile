@@ -97,8 +97,9 @@ execute-k6: execute-k6-scaledobjects
 execute-k6-scaledobjects:
 	@for file in $(shell find ./configs/scaledobjects -maxdepth 1 -not -type d); do \
 		make execute-k6-scaled-object-case TEST_CONFIG="$${file}" ; \
+		make print-logs-and-restart-keda ; \
 	done
-	
+
 execute-k6-scaled-object-case:
 	@helm install k6-test \
 		chart	\
@@ -117,6 +118,11 @@ execute-k6-scaled-object-case:
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
 	helm uninstall k6-test -n $(K6_OPERATOR_NAMESPACE)
+
+print-logs-and-restart-keda:
+	kubectl logs -n keda -l name=keda-operator --since=30m --tail=-1
+	kubectl rollout restart deployment keda-operator -n keda
+	kubectl rollout status deployment keda-operator -n keda
 
 ##################################################
 # Linter                                         #
