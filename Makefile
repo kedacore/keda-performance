@@ -141,7 +141,7 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.PROMETHEUS_USER=$(TF_GRAFANA_PROMETHEUS_USER) \
 		--set test.extraConfig.PROMETHEUS_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
 		--set test.extraConfig.INJECT_FAULTS=$(INJECT_FAULTS) \
-		--set test.extraArgs="--out cloud"
+		--set test.extraArgs="--out cloud --tag testCase=ScaledObject"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
