@@ -144,7 +144,7 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.INJECT_FAULTS=$(INJECT_FAULTS) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_SERVER_URL=$(GRAFANA_PROMETHEUS_RW_SERVER_URL) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max \
-		--set test.extraArgs="--out cloud -out experimental-prometheus-rw --tag testCase=ScaledObject"
+		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
