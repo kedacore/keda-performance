@@ -56,7 +56,7 @@ undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator u
 
 deploy-keda:
 	mkdir -p deps
-	git clone https://github.com/kedacore/keda deps/keda --depth 1
+	git clone --branch $(KEDA_VERSION) https://github.com/kedacore/keda deps/keda --depth 1
 	VERSION=$(KEDA_VERSION) make -C deps/keda deploy
 	# update resources to 2CPU & 2Gi
 	kubectl patch deploy keda-operator -n keda --type json -p="[ \
@@ -145,7 +145,7 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.K6_PROMETHEUS_RW_USERNAME=$(TF_GRAFANA_PROMETHEUS_USER) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max \
-		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject"
+		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject --tag kedaVersion=$(KEDA_VERSION)"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
