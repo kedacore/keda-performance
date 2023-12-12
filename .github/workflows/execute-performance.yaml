@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: performance-tests
     env:
-      KEDA_VERSION: main
+      KEDA_DOCKER_TAG: main
+      KEDA_GITHUB_TAG: main
     steps:
       - uses: actions/checkout@v3
 
@@ -23,7 +24,8 @@ jobs:
         if: ${{ inputs.keda_version }}
         uses: trevorlloydelliott/set-environment-variables@v1.0.0
         with:
-          KEDA_VERSION: ${{ inputs.keda_version }}
+          KEDA_DOCKER_TAG: ${{ inputs.keda_version }}
+          KEDA_GITHUB_TAG: v${{ inputs.keda_version }}
 
       - uses: oNaiPs/secrets-to-env-action@v1
         with:

@@ -13,7 +13,8 @@ TF_GRAFANA_TOKEN ?= token
 
 INJECT_FAULTS ?= 0
 
-KEDA_VERSION ?= main
+KEDA_DOCKER_TAG ?= main
+KEDA_GITHUB_TAG ?= main
 
 GRAFANA_PROMETHEUS_URL_PUSH ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom/push
 GRAFANA_PROMETHEUS_URL_QUERY ?= $(TF_GRAFANA_PROMETHEUS_URL)/api/prom
@@ -56,8 +57,8 @@ undeploy: clean-up-testing-namespaces undeploy-prometheus undeploy-k6-operator u
 
 deploy-keda:
 	mkdir -p deps
-	git clone --branch $(KEDA_VERSION) https://github.com/kedacore/keda deps/keda --depth 1
-	VERSION=$(KEDA_VERSION) make -C deps/keda deploy
+	git clone --branch $(KEDA_GITHUB_TAG) https://github.com/kedacore/keda deps/keda --depth 1
+	VERSION=$(KEDA_DOCKER_TAG) make -C deps/keda deploy
 	# update resources to 2CPU & 2Gi
 	kubectl patch deploy keda-operator -n keda --type json -p="[ \
 		{'op': 'replace', 'path': '/spec/template/spec/containers/0/resources/requests/memory', 'value':'2Gi'}, \
@@ -67,7 +68,7 @@ deploy-keda:
 		]"
 
 undeploy-keda:
-	VERSION=$(KEDA_VERSION) make -C deps/keda undeploy
+	make -C deps/keda undeploy
 	rm -rf deps/keda
 
 deploy-prometheus:
@@ -78,7 +79,7 @@ deploy-prometheus:
 					--set server.remoteWrite[0].url=$(GRAFANA_PROMETHEUS_URL_PUSH) \
 					--set server.remoteWrite[0].basic_auth.username=$(TF_GRAFANA_PROMETHEUS_USER) \
 					--set server.remoteWrite[0].basic_auth.password=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
-					--set server.remoteWrite[0].write_relabel_configs[0].replacement=$(KEDA_VERSION) \
+					--set server.remoteWrite[0].write_relabel_configs[0].replacement=$(KEDA_GITHUB_TAG) \
 					-f deps/prometheus/values.yaml \
 					--namespace $(PROMETHEUS_NAMESPACE) \
 					--create-namespace \
@@ -145,7 +146,7 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.K6_PROMETHEUS_RW_USERNAME=$(TF_GRAFANA_PROMETHEUS_USER) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max \
-		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject --tag kedaVersion=$(KEDA_VERSION)"
+		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject --tag kedaVersion=$(KEDA_GITHUB_TAG)"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
