@@ -145,7 +145,8 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.K6_PROMETHEUS_RW_SERVER_URL=$(GRAFANA_PROMETHEUS_URL_PUSH) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_USERNAME=$(TF_GRAFANA_PROMETHEUS_USER) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
-		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject --tag kedaVersion=$(KEDA_GITHUB_TAG)"
+		--set test.extraConfig.K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true \
+		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject --tag testid=$(TEST_CONFIG) --tag kedaVersion=$(KEDA_GITHUB_TAG)"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
