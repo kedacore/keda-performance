@@ -131,7 +131,7 @@ execute-k6-scaledobjects:
 	done
 
 execute-k6-case:
-	echo helm install k6-test \
+	helm install k6-test \
 		chart	\
 		-n $(K6_OPERATOR_NAMESPACE) \
 		--create-namespace \
