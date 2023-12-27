@@ -23,7 +23,8 @@ K6_OPERATOR_NAMESPACE = k6-operator-system
 REPO_URL ?= https://github.com/kedacore/keda-performance.git
 REPO_BRANCH ?= main
 TEST_CONFIG ?= config.json
-
+TEST_FILE ?= tests/test-scaledobject.js
+TEST_CASE ?= ScaledObject
 NODE_POOL_SIZE ?= 1
 
 ##################################################
@@ -125,16 +126,16 @@ execute-k6: execute-k6-scaledobjects
 	
 execute-k6-scaledobjects:
 	@for file in $(shell find ./configs/scaledobjects -maxdepth 1 -not -type d); do \
-		make execute-k6-scaled-object-case TEST_CONFIG="$${file}" ; \
+		make execute-k6-case TEST_FILE="tests/test-scaledobject.js" TEST_CASE="ScaledObject" TEST_CONFIG="$${file}" ; \
 		make print-logs-and-restart-keda ; \
 	done
 
-execute-k6-scaled-object-case:
-	@helm install k6-test \
+execute-k6-case:
+	helm install k6-test \
 		chart	\
 		-n $(K6_OPERATOR_NAMESPACE) \
 		--create-namespace \
-		--set test.file=tests/test-scaledobject.js \
+		--set test.file=$(TEST_FILE) \
 		--set test.config=$(TEST_CONFIG) \
 		--set repo.url=$(REPO_URL) \
 		--set repo.branch=$(REPO_BRANCH) \
@@ -146,7 +147,7 @@ execute-k6-scaled-object-case:
 		--set test.extraConfig.K6_PROMETHEUS_RW_USERNAME=$(TF_GRAFANA_PROMETHEUS_USER) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_PASSWORD=$(TF_GRAFANA_PROMETHEUS_PASSWORD) \
 		--set test.extraConfig.K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true \
-		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=ScaledObject --tag testid=$(TEST_CONFIG) --tag kedaVersion=$(KEDA_GITHUB_TAG)"
+		--set test.extraArgs="--out cloud --out experimental-prometheus-rw --tag testCase=$(TEST_CASE) --tag testId=$(shell jq -r '.ext.loadimpact.name' '$(TEST_CONFIG)') --tag testRun=$(shell date -u +%FT%TZ) --tag kedaVersion=$(KEDA_GITHUB_TAG)"
 
 	./hack/wait-test-case.sh $(K6_OPERATOR_NAMESPACE)
 
